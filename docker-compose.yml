@@ -1,4 +1,37 @@
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: team-b-backend
+    ports:
+      - '4000:3000'
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      MONGO_URI: mongodb://admin:admin@mongodb:27017/clinic-health-forms?authSource=admin
+      PORT: 3000
+      NODE_ENV: production
+      CORS_ORIGIN: http://localhost:3000
+    networks:
+      - team-b-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:4000/api
+    container_name: team-b-frontend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    networks:
+      - team-b-network
+
   mongodb:
     image: mongo:latest
     container_name: patient-forms-mongo
@@ -9,7 +42,18 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - team-b-network
 
 volumes:
   team_a_mongo-data:
     driver: local
+
+networks:
+  team-b-network:
+    driver: bridge

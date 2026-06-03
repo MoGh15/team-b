@@ -1,0 +1,244 @@
+.user-list {
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.user-list.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #0066cc;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.user-list.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.empty-state {
+  text-align: center;
+}
+
+.empty-state h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: #999;
+  font-size: 14px;
+}
+
+.user-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.user-list-header h2 {
+  font-size: 20px;
+  color: #333;
+  margin: 0;
+}
+
+.btn-refresh {
+  background-color: transparent;
+  border: 1px solid #ddd;
+  color: #666;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 4px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-refresh:hover {
+  background-color: #f5f5f5;
+  border-color: #0066cc;
+  color: #0066cc;
+  transform: rotate(180deg);
+}
+
+/* Users Grid (Card View) */
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Users Table */
+.users-table-container {
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  font-size: 14px;
+}
+
+.users-table thead {
+  background-color: #f9f9f9;
+}
+
+.users-table th {
+  font-weight: 600;
+  color: #333;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.users-table tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.users-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.users-table td {
+  padding: 12px;
+  color: #333;
+}
+
+.cell-name {
+  font-weight: 500;
+}
+
+.cell-email {
+  color: #666;
+  font-size: 13px;
+}
+
+.cell-role {
+  text-align: center;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-admin {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-doctor {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.badge-nurse {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.badge-receptionist {
+  background-color: #e7d4f5;
+  color: #721c24;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-inactive {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.cell-date {
+  color: #999;
+  font-size: 13px;
+}
+
+.cell-actions {
+  text-align: center;
+}
+
+.btn-icon {
+  background-color: transparent;
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  margin: 0 4px;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.btn-edit {
+  color: #0066cc;
+}
+
+.btn-edit:hover {
+  background-color: #e3f2fd;
+  border-color: #0066cc;
+}
+
+.btn-delete {
+  color: #d32f2f;
+}
+
+.btn-delete:hover {
+  background-color: #ffebee;
+  border-color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+  .users-table-container {
+    display: none;
+  }
+
+  .users-grid {
+    grid-template-columns: 1fr;
+  }
+}

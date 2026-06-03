@@ -3,6 +3,11 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
+    name: {
+      type: String,
+      required: [true, 'Please provide a name'],
+      trim: true
+    },
     email: {
       type: String,
       required: [true, 'Please provide an email address'],
@@ -21,8 +26,13 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['Admin'],
-      default: 'Admin'
+      enum: ['admin', 'doctor', 'nurse', 'receptionist'],
+      default: 'receptionist'
+    },
+    status: {
+      type: String,
+      enum: ['active', 'inactive', 'pending'],
+      default: 'active'
     },
     createdAt: {
       type: Date,
