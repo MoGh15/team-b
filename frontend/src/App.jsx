@@ -1,7 +1,40 @@
 import React, { useState, useEffect } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import Login from './components/Login'
 import UserManagement from './pages/UserManagement'
 import { API_BASE_URL } from './api/userApi'
 import './App.css'
+
+function AdminDashboardPlaceholder() {
+  return (
+    <div className="admin-dashboard-placeholder">
+      <div>
+        <p>Admin Dashboard</p>
+        <h1>Dashboard kommt später</h1>
+      </div>
+    </div>
+  )
+}
+
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem('authToken')
+
+  if (!token) {
+    return <Navigate to="/login" replace />
+  }
+
+  return children
+}
+
+function LoginRoute() {
+  const token = localStorage.getItem('authToken')
+
+  if (token) {
+    return <Navigate to="/admin-dashboard" replace />
+  }
+
+  return <Login />
+}
 
 function App() {
   const [isLoading, setIsLoading] = useState(true)
@@ -48,7 +81,27 @@ function App() {
 
   return (
     <div className="app-container">
-      <UserManagement />
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<LoginRoute />} />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboardPlaceholder />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <UserManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
     </div>
   )
 }
