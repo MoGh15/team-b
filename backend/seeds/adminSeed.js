@@ -4,6 +4,7 @@ const User = require('../models/User');
 
 const ADMIN_EMAIL = 'admin@example.com';
 const ADMIN_PASSWORD = 'admin123';
+const ADMIN_NAME = 'admin';
 
 /**
  * Connect to MongoDB and seed admin user
@@ -19,27 +20,31 @@ const seedAdmin = async () => {
     });
     console.log('✓ Connected to MongoDB');
 
-    // Check if admin user already exists
-    const existingAdmin = await User.findOne({ email: ADMIN_EMAIL });
+    const existingAdmin = await User.findOne({ email: ADMIN_EMAIL }).select('+password');
 
     if (existingAdmin) {
-      console.log(`ℹ Admin user with email "${ADMIN_EMAIL}" already exists.`);
-      console.log('✓ Seeding skipped.');
-      await mongoose.disconnect();
-      process.exit(0);
+      existingAdmin.name = ADMIN_NAME;
+      existingAdmin.password = ADMIN_PASSWORD;
+      existingAdmin.role = 'admin';
+      existingAdmin.status = 'active';
+      await existingAdmin.save();
+      console.log(`✓ Default admin user refreshed successfully!`);
+    } else {
+      const adminUser = new User({
+        name: ADMIN_NAME,
+        email: ADMIN_EMAIL,
+        password: ADMIN_PASSWORD,
+        role: 'admin',
+        status: 'active'
+      });
+
+      await adminUser.save();
+      console.log(`✓ Default admin user created successfully!`);
     }
 
-    // Create default admin user
-    const adminUser = new User({
-      email: ADMIN_EMAIL,
-      password: ADMIN_PASSWORD,
-      role: 'Admin'
-    });
-
-    await adminUser.save();
-    console.log(`✓ Default admin user created successfully!`);
     console.log(`  Email: ${ADMIN_EMAIL}`);
-    console.log(`  Role: Admin`);
+    console.log(`  Username: ${ADMIN_NAME}`);
+    console.log(`  Role: admin`);
 
     // Disconnect from MongoDB
     await mongoose.disconnect();

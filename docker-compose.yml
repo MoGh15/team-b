@@ -14,7 +14,9 @@ services:
       MONGO_URI: mongodb://admin:admin@mongodb:27017/clinic-health-forms?authSource=admin
       PORT: 3000
       NODE_ENV: production
+      JWT_SECRET: team-b-change-this-secret
       CORS_ORIGIN: http://localhost:3000
+    command: sh -c "node seeds/adminSeed.js && node server.js"
     networks:
       - team-b-network
 
