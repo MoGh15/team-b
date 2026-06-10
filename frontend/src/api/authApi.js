@@ -1,4 +1,5 @@
 import api from './userApi'
+import { findLocalDoctorByCredentials } from './localDoctorStore'
 
 const DEFAULT_ADMIN_EMAIL = 'admin@example.com'
 const DEFAULT_ADMIN_USERNAME = 'admin'
@@ -32,11 +33,36 @@ const createLocalAdminSession = () => ({
   },
 })
 
+const createLocalDoctorSession = (doctor) => ({
+  data: {
+    status: 'success',
+    message: 'Local doctor login successful',
+    token: `local-doctor-${Date.now()}`,
+    localAuth: true,
+    user: {
+      id: doctor._id,
+      name: doctor.name || doctor.fullName,
+      fullName: doctor.fullName || doctor.name,
+      email: doctor.email,
+      role: 'doctor',
+      specialization: doctor.specialization || '',
+      isActive: doctor.isActive !== false,
+      status: doctor.status || 'active',
+    },
+  },
+})
+
 export const authApi = {
   login: async (credentials) => {
     try {
       return await api.post('/auth/login', credentials)
     } catch (error) {
+      const localDoctor = findLocalDoctorByCredentials(credentials)
+
+      if (localDoctor) {
+        return createLocalDoctorSession(localDoctor)
+      }
+
       if (canUseLocalAdminLogin(error) && isDefaultAdmin(credentials)) {
         return createLocalAdminSession()
       }

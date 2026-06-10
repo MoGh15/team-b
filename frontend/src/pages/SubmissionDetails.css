@@ -101,6 +101,7 @@
 }
 
 .admin-edit-grid,
+.consultation-edit-grid,
 .symptom-edit-card {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -345,6 +346,13 @@
   backdrop-filter: blur(8px);
 }
 
+.read-only-note {
+  margin-right: auto;
+  color: #667085;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .admin-action--plain {
   border: 1px solid #d8dce7;
   background: #ffffff;
@@ -416,6 +424,7 @@
 @media (max-width: 760px) {
   .patient-summary-grid,
   .admin-edit-grid,
+  .consultation-edit-grid,
   .symptom-edit-card,
   .consent-grid,
   .two-column-details {

@@ -29,7 +29,11 @@
     "firstPage": "Erste Seite",
     "previousPage": "Vorherige Seite",
     "nextPage": "Naechste Seite",
-    "lastPage": "Letzte Seite"
+    "lastPage": "Letzte Seite",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "activate": "Aktivieren",
+    "deactivate": "Deaktivieren"
   },
   "patient": {
     "title": "Patient",
@@ -80,7 +84,14 @@
     "fileLimitError": "Maximal 5 Dateien erlaubt.",
     "fileSizeError": "{{fileName}} ist groesser als 10 MB.",
     "editSymptom": "{{name}} bearbeiten",
-    "removeSymptom": "{{name}} entfernen"
+    "removeSymptom": "{{name}} entfernen",
+    "doctorSelectLabel": "Behandelnder Arzt",
+    "doctorSelectPlaceholder": "Arzt auswaehlen",
+    "selectDoctorPlaceholder": "Arzt auswaehlen",
+    "doctorsLoading": "Aerzte werden geladen...",
+    "noDoctorsAvailable": "Keine aktiven Aerzte verfuegbar",
+    "doctorsLoadError": "Aktive Aerzte konnten nicht geladen werden.",
+    "doctorLoadError": "Aerzte konnten nicht geladen werden."
   },
   "medical": {
     "symptoms": {
@@ -161,7 +172,8 @@
     "birthDateRequired": "Geburtsdatum ist erforderlich.",
     "birthDateFuture": "Geburtsdatum darf nicht in der Zukunft liegen.",
     "emailInvalid": "Bitte eine gueltige E-Mail eingeben.",
-    "signatureRequired": "Unterschrift erforderlich."
+    "signatureRequired": "Unterschrift erforderlich.",
+    "doctorRequired": "Bitte waehlen Sie den Arzt aus, der den Patienten untersucht."
   },
   "adminDashboard": {
     "kicker": "Patientenaufnahme",
@@ -181,7 +193,29 @@
     "loading": "Eintraege werden geladen...",
     "loadError": "Eintraege konnten nicht geladen werden.",
     "noSubmittedForms": "Keine eingereichten Formulare verfuegbar.",
-    "noMatchingForms": "Keine passenden Eintraege gefunden."
+    "noMatchingForms": "Keine passenden Eintraege gefunden.",
+    "doctorsTitle": "Aerzte",
+    "doctorsSubtitle": "Arztkonten erstellen und aktiven Zugriff verwalten.",
+    "createDoctor": "Arzt erstellen",
+    "editDoctor": "Arzt bearbeiten",
+    "activateDoctor": "Arzt aktivieren",
+    "deactivateDoctor": "Arzt deaktivieren",
+    "fullName": "Vollstaendiger Name",
+    "specialization": "Fachrichtung",
+    "password": "Passwort",
+    "doctorFilterLabel": "Nach Arzt filtern",
+    "doctorFilter": "Nach Arzt filtern",
+    "allDoctors": "Alle Aerzte",
+    "assignedDoctor": "Arzt",
+    "noDoctors": "Keine Aerzte verfuegbar.",
+    "createDoctorSuccess": "Arztkonto wurde erstellt.",
+    "createDoctorError": "Arztkonto konnte nicht erstellt werden.",
+    "updateDoctorSuccess": "Arztkonto wurde aktualisiert.",
+    "updateDoctorError": "Arztkonto konnte nicht aktualisiert werden.",
+    "doctorsLoadError": "Aerzte konnten nicht geladen werden.",
+    "doctorLoadError": "Aerzte konnten nicht geladen werden.",
+    "updateDoctorStatusError": "Arztstatus konnte nicht aktualisiert werden.",
+    "keepPasswordPlaceholder": "Leer lassen, um Passwort zu behalten"
   },
   "doctorDashboard": {
     "title": "Doctor Dashboard",
@@ -196,7 +230,10 @@
     "allergies": "Allergien",
     "uploadedFiles": "Hochgeladene Dateien",
     "consent": "Einwilligung",
-    "digitalSignature": "Digitale Unterschrift"
+    "digitalSignature": "Digitale Unterschrift",
+    "kicker": "Zugewiesene Patienten",
+    "assignedSubtitle": "Es werden nur Patienten angezeigt, die Ihrem Arztkonto zugewiesen sind.",
+    "noAssignedForms": "Ihnen sind keine Patientenformulare zugewiesen."
   },
   "submissionDetails": {
     "title": "Einreichungsdetails",
@@ -221,6 +258,17 @@
     "refresh": "Aktualisieren",
     "edit": "Bearbeiten",
     "statusSwitch": "Status setzen",
-    "saveAndMarkDone": "Speichern & als erledigt markieren"
+    "saveAndMarkDone": "Speichern & als erledigt markieren",
+    "assignedDoctor": "Zugewiesener Arzt",
+    "readOnlyDoctor": "Die Arztansicht ist schreibgeschuetzt.",
+    "patientReadOnlyDoctor": "Patientendaten sind schreibgeschuetzt. Speichern Sie die Untersuchung unten.",
+    "consultationTitle": "Aerztliche Untersuchung",
+    "diagnosis": "Diagnose",
+    "doctorNotes": "Arztnotizen",
+    "prescription": "Rezept",
+    "consultationStatus": "Fallstatus",
+    "consultationUpdated": "Untersuchung aktualisiert",
+    "saveConsultation": "Untersuchung speichern",
+    "saveConsultationError": "Untersuchung konnte nicht gespeichert werden."
   }
 }

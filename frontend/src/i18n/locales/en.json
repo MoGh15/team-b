@@ -29,7 +29,11 @@
     "firstPage": "First page",
     "previousPage": "Previous page",
     "nextPage": "Next page",
-    "lastPage": "Last page"
+    "lastPage": "Last page",
+    "active": "Active",
+    "inactive": "Inactive",
+    "activate": "Activate",
+    "deactivate": "Deactivate"
   },
   "patient": {
     "title": "Patient",
@@ -80,7 +84,14 @@
     "fileLimitError": "A maximum of 5 files is allowed.",
     "fileSizeError": "{{fileName}} is larger than 10 MB.",
     "editSymptom": "Edit {{name}}",
-    "removeSymptom": "Remove {{name}}"
+    "removeSymptom": "Remove {{name}}",
+    "doctorSelectLabel": "Examining doctor",
+    "doctorSelectPlaceholder": "Select a doctor",
+    "selectDoctorPlaceholder": "Select a doctor",
+    "doctorsLoading": "Loading doctors...",
+    "noDoctorsAvailable": "No active doctors available",
+    "doctorsLoadError": "Active doctors could not be loaded.",
+    "doctorLoadError": "Doctors could not be loaded."
   },
   "medical": {
     "symptoms": {
@@ -161,7 +172,8 @@
     "birthDateRequired": "Date of birth is required.",
     "birthDateFuture": "Date of birth cannot be in the future.",
     "emailInvalid": "Please enter a valid email address.",
-    "signatureRequired": "Signature is required."
+    "signatureRequired": "Signature is required.",
+    "doctorRequired": "Please select the doctor who will examine the patient."
   },
   "adminDashboard": {
     "kicker": "Patient admission",
@@ -181,7 +193,29 @@
     "loading": "Loading entries...",
     "loadError": "Entries could not be loaded.",
     "noSubmittedForms": "No submitted forms available.",
-    "noMatchingForms": "No matching entries found."
+    "noMatchingForms": "No matching entries found.",
+    "doctorsTitle": "Doctors",
+    "doctorsSubtitle": "Create doctor accounts and manage active access.",
+    "createDoctor": "Create doctor",
+    "editDoctor": "Edit doctor",
+    "activateDoctor": "Activate doctor",
+    "deactivateDoctor": "Deactivate doctor",
+    "fullName": "Full name",
+    "specialization": "Specialization",
+    "password": "Password",
+    "doctorFilterLabel": "Filter by doctor",
+    "doctorFilter": "Filter by doctor",
+    "allDoctors": "All doctors",
+    "assignedDoctor": "Doctor",
+    "noDoctors": "No doctors available.",
+    "createDoctorSuccess": "Doctor account created.",
+    "createDoctorError": "Doctor account could not be created.",
+    "updateDoctorSuccess": "Doctor account updated.",
+    "updateDoctorError": "Doctor account could not be updated.",
+    "doctorsLoadError": "Doctors could not be loaded.",
+    "doctorLoadError": "Doctors could not be loaded.",
+    "updateDoctorStatusError": "Doctor status could not be updated.",
+    "keepPasswordPlaceholder": "Leave blank to keep password"
   },
   "doctorDashboard": {
     "title": "Doctor Dashboard",
@@ -196,7 +230,10 @@
     "allergies": "Allergies",
     "uploadedFiles": "Uploaded files",
     "consent": "Consent",
-    "digitalSignature": "Digital signature"
+    "digitalSignature": "Digital signature",
+    "kicker": "Assigned patients",
+    "assignedSubtitle": "Only patients assigned to your doctor account are shown.",
+    "noAssignedForms": "No patient forms are assigned to you."
   },
   "submissionDetails": {
     "title": "Submission Details",
@@ -221,6 +258,17 @@
     "refresh": "Refresh",
     "edit": "Edit",
     "statusSwitch": "Set status",
-    "saveAndMarkDone": "Save & mark as done"
+    "saveAndMarkDone": "Save & mark as done",
+    "assignedDoctor": "Assigned doctor",
+    "readOnlyDoctor": "Doctor view is read-only.",
+    "patientReadOnlyDoctor": "Patient data is read-only. Save the consultation below.",
+    "consultationTitle": "Doctor consultation",
+    "diagnosis": "Diagnosis",
+    "doctorNotes": "Doctor notes",
+    "prescription": "Prescription",
+    "consultationStatus": "Case status",
+    "consultationUpdated": "Consultation updated",
+    "saveConsultation": "Save consultation",
+    "saveConsultationError": "Consultation could not be saved."
   }
 }

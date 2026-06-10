@@ -24,6 +24,7 @@ import {
   Wind,
   X,
 } from 'lucide-react'
+import { doctorApi } from '../api/doctorApi'
 import { patientFormApi } from '../api/patientFormApi'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import './PatientForm.css'
@@ -105,6 +106,10 @@ function PatientForm() {
   const [customAllergyValue, setCustomAllergyValue] = useState('')
   const [customMedicationValue, setCustomMedicationValue] = useState('')
   const [documents, setDocuments] = useState([])
+  const [doctors, setDoctors] = useState([])
+  const [selectedDoctorId, setSelectedDoctorId] = useState('')
+  const [doctorsLoading, setDoctorsLoading] = useState(true)
+  const [doctorsError, setDoctorsError] = useState('')
   const [signatureTouched, setSignatureTouched] = useState(false)
   const [errors, setErrors] = useState({})
   const [statusMessage, setStatusMessage] = useState(null)
@@ -147,6 +152,37 @@ function PatientForm() {
     }
   }, [])
 
+  useEffect(() => {
+    let isMounted = true
+
+    const fetchDoctors = async () => {
+      try {
+        setDoctorsLoading(true)
+        setDoctorsError('')
+        const response = await doctorApi.getPublicDoctors()
+
+        if (isMounted) {
+          setDoctors(response.data?.data || [])
+        }
+      } catch (error) {
+        if (isMounted) {
+          setDoctors([])
+          setDoctorsError(error.response?.data?.message || t('patientForm.doctorLoadError'))
+        }
+      } finally {
+        if (isMounted) {
+          setDoctorsLoading(false)
+        }
+      }
+    }
+
+    fetchDoctors()
+
+    return () => {
+      isMounted = false
+    }
+  }, [t])
+
   const updatePatient = (field, value) => {
     setPatient((current) => ({
       ...current,
@@ -157,6 +193,17 @@ function PatientForm() {
       setErrors((current) => ({
         ...current,
         [field]: '',
+      }))
+    }
+  }
+
+  const updateDoctor = (value) => {
+    setSelectedDoctorId(value)
+
+    if (errors.doctorId) {
+      setErrors((current) => ({
+        ...current,
+        doctorId: '',
       }))
     }
   }
@@ -401,6 +448,10 @@ function PatientForm() {
       nextErrors.birthDate = t('validation.birthDateFuture')
     }
 
+    if (!selectedDoctorId) {
+      nextErrors.doctorId = t('validation.doctorRequired')
+    }
+
     if (patient.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patient.email)) {
       nextErrors.email = t('validation.emailInvalid')
     }
@@ -428,6 +479,7 @@ function PatientForm() {
     setCustomAllergyValue('')
     setCustomMedicationValue('')
     setDocuments([])
+    setSelectedDoctorId('')
     setErrors({})
     setStatusMessage(null)
     clearSignature()
@@ -441,8 +493,11 @@ function PatientForm() {
       return
     }
 
+    const selectedDoctor = doctors.find((doctor) => doctor._id === selectedDoctorId)
     const payload = {
       patient,
+      doctorId: selectedDoctorId,
+      doctorName: selectedDoctor?.fullName || selectedDoctor?.name || '',
       symptoms: selectedSymptoms.map((name) => ({
         name,
         ...defaultSymptomDetails,
@@ -462,7 +517,6 @@ function PatientForm() {
     try {
       setIsSubmitting(true)
       const response = await patientFormApi.submit(payload)
-      resetForm()
       setStatusMessage({
         type: 'success',
         text: response.data?.savedLocally
@@ -600,7 +654,31 @@ function PatientForm() {
               onChange={(value) => updatePatient('city', value)}
               wide
             />
+            <SelectField
+              id="doctorId"
+              label={`${t('patientForm.doctorSelectLabel')}*`}
+              value={selectedDoctorId}
+              error={errors.doctorId}
+              disabled={doctorsLoading || doctors.length === 0}
+              placeholder={
+                doctorsLoading
+                  ? t('patientForm.doctorsLoading')
+                  : doctors.length === 0
+                    ? t('patientForm.noDoctorsAvailable')
+                    : t('patientForm.selectDoctorPlaceholder')
+              }
+              onChange={updateDoctor}
+              wide
+            >
+              {doctors.map((doctor) => (
+                <option key={doctor._id} value={doctor._id}>
+                  {doctor.fullName || doctor.name}
+                  {doctor.specialization ? ` - ${doctor.specialization}` : ''}
+                </option>
+              ))}
+            </SelectField>
           </div>
+          {doctorsError && <p className="field-error doctor-load-error">{doctorsError}</p>}
         </section>
 
         <section className="form-section medical-section">
@@ -951,6 +1029,25 @@ function TextField({ id, label, value, onChange, type = 'text', error, wide = fa
         max={max}
         onChange={(event) => onChange(event.target.value)}
       />
+      {error && <span>{error}</span>}
+    </div>
+  )
+}
+
+function SelectField({ id, label, value, onChange, error, wide = false, disabled = false, placeholder, children }) {
+  return (
+    <div className={`text-field${wide ? ' text-field--wide' : ''}`}>
+      <label htmlFor={id}>{label}</label>
+      <select
+        id={id}
+        value={value}
+        disabled={disabled}
+        className={error ? 'input-error' : ''}
+        onChange={(event) => onChange(event.target.value)}
+      >
+        <option value="">{placeholder}</option>
+        {children}
+      </select>
       {error && <span>{error}</span>}
     </div>
   )

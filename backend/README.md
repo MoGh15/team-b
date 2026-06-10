@@ -73,7 +73,7 @@ backend/
 ├── config/
 │   └── db.js                  # MongoDB connection configuration
 ├── models/
-│   └── User.js                # User schema with Admin role
+│   └── User.js                # User schema with lowercase roles
 ├── seeds/
 │   └── adminSeed.js           # Admin user seeding script
 ├── .env                       # Environment variables
@@ -99,7 +99,7 @@ JWT_SECRET=your_jwt_secret_key_change_in_production                 # JWT secret
 The User model includes:
 - **email**: Required, unique, validated email address
 - **password**: Required, minimum 6 characters, hashed with bcrypt
-- **role**: Fixed to "Admin" role only
+- **role**: Lowercase role value such as "admin" or "doctor"
 - **timestamps**: Automatically tracks createdAt and updatedAt
 
 ### Password Security
@@ -139,7 +139,7 @@ Content-Type: application/json
   "user": {
     "id": "...",
     "email": "admin@example.com",
-    "role": "Admin"
+    "role": "admin"
   }
 }
 ```

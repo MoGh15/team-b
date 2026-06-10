@@ -27,6 +27,9 @@ app.use(express.urlencoded({ extended: true }));
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const patientFormRoutes = require('./routes/patientForms');
+const doctorRoutes = require('./routes/doctors');
+const adminRoutes = require('./routes/admin');
+const doctorDashboardRoutes = require('./routes/doctor');
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -41,6 +44,9 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/patient-forms', patientFormRoutes);
+app.use('/api/doctors', doctorRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/doctor', doctorDashboardRoutes);
 
 // 404 handler
 app.use((req, res) => {

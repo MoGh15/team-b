@@ -35,6 +35,13 @@ exports.protect = async (req, res, next) => {
       });
     }
 
+    if (req.user.status !== 'active' || req.user.isActive === false) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Account is inactive'
+      });
+    }
+
     next();
   } catch (error) {
     console.error('Token verification error:', error.message);

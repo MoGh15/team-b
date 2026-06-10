@@ -89,6 +89,16 @@ const patientFormSchema = new mongoose.Schema(
         size: Number
       }
     ],
+    doctorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'Doctor is required'],
+      index: true
+    },
+    doctorName: {
+      type: String,
+      trim: true
+    },
     status: {
       type: String,
       enum: ['NEW', 'VIEWED', 'DONE'],
@@ -98,6 +108,30 @@ const patientFormSchema = new mongoose.Schema(
     statusUpdatedAt: {
       type: Date,
       default: Date.now
+    },
+    consultation: {
+      diagnosis: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      notes: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      prescription: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      updatedAt: {
+        type: Date
+      },
+      updatedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }
     },
     signatureCaptured: {
       type: Boolean,

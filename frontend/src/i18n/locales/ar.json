@@ -29,7 +29,11 @@
     "firstPage": "الصفحة الأولى",
     "previousPage": "الصفحة السابقة",
     "nextPage": "الصفحة التالية",
-    "lastPage": "الصفحة الأخيرة"
+    "lastPage": "الصفحة الأخيرة",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "activate": "تفعيل",
+    "deactivate": "تعطيل"
   },
   "patient": {
     "title": "المريض",
@@ -80,7 +84,14 @@
     "fileLimitError": "يسمح بحد أقصى 5 ملفات.",
     "fileSizeError": "الملف {{fileName}} أكبر من 10 ميجابايت.",
     "editSymptom": "تعديل {{name}}",
-    "removeSymptom": "إزالة {{name}}"
+    "removeSymptom": "إزالة {{name}}",
+    "doctorSelectLabel": "الطبيب المعاين",
+    "doctorSelectPlaceholder": "اختر الطبيب",
+    "selectDoctorPlaceholder": "اختر الطبيب",
+    "doctorsLoading": "جاري تحميل الأطباء...",
+    "noDoctorsAvailable": "لا يوجد أطباء نشطون",
+    "doctorsLoadError": "تعذر تحميل قائمة الأطباء.",
+    "doctorLoadError": "تعذر تحميل قائمة الأطباء."
   },
   "medical": {
     "symptoms": {
@@ -161,7 +172,8 @@
     "birthDateRequired": "تاريخ الميلاد مطلوب.",
     "birthDateFuture": "لا يمكن أن يكون تاريخ الميلاد في المستقبل.",
     "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح.",
-    "signatureRequired": "التوقيع مطلوب."
+    "signatureRequired": "التوقيع مطلوب.",
+    "doctorRequired": "يرجى اختيار الطبيب الذي سيقوم بمعاينة المريض."
   },
   "adminDashboard": {
     "kicker": "استقبال المرضى",
@@ -181,7 +193,29 @@
     "loading": "جارٍ تحميل السجلات...",
     "loadError": "تعذر تحميل السجلات.",
     "noSubmittedForms": "لا توجد نماذج مرسلة.",
-    "noMatchingForms": "لا توجد نتائج مطابقة."
+    "noMatchingForms": "لا توجد نتائج مطابقة.",
+    "doctorsTitle": "الأطباء",
+    "doctorsSubtitle": "إنشاء حسابات الأطباء وإدارة الوصول النشط.",
+    "createDoctor": "إنشاء طبيب",
+    "editDoctor": "تعديل الطبيب",
+    "activateDoctor": "تفعيل الطبيب",
+    "deactivateDoctor": "تعطيل الطبيب",
+    "fullName": "الاسم الكامل",
+    "specialization": "التخصص",
+    "password": "كلمة المرور",
+    "doctorFilterLabel": "تصفية حسب الطبيب",
+    "doctorFilter": "تصفية حسب الطبيب",
+    "allDoctors": "كل الأطباء",
+    "assignedDoctor": "الطبيب المسؤول",
+    "noDoctors": "لا يوجد أطباء.",
+    "createDoctorSuccess": "تم إنشاء حساب الطبيب.",
+    "createDoctorError": "تعذر إنشاء حساب الطبيب.",
+    "updateDoctorSuccess": "تم تحديث حساب الطبيب.",
+    "updateDoctorError": "تعذر تحديث حساب الطبيب.",
+    "doctorsLoadError": "تعذر تحميل قائمة الأطباء.",
+    "doctorLoadError": "تعذر تحميل قائمة الأطباء.",
+    "updateDoctorStatusError": "تعذر تحديث حالة الطبيب.",
+    "keepPasswordPlaceholder": "اتركه فارغا للاحتفاظ بكلمة المرور"
   },
   "doctorDashboard": {
     "title": "لوحة الطبيب",
@@ -196,7 +230,10 @@
     "allergies": "الحساسيات",
     "uploadedFiles": "الملفات المرفوعة",
     "consent": "الموافقة",
-    "digitalSignature": "التوقيع الرقمي"
+    "digitalSignature": "التوقيع الرقمي",
+    "kicker": "المرضى المعينون",
+    "assignedSubtitle": "يتم عرض المرضى المعينين لحساب الطبيب الخاص بك فقط.",
+    "noAssignedForms": "لا توجد نماذج مرضى معينة لك."
   },
   "submissionDetails": {
     "title": "تفاصيل النموذج",
@@ -221,6 +258,17 @@
     "refresh": "تحديث",
     "edit": "تعديل",
     "statusSwitch": "تغيير الحالة",
-    "saveAndMarkDone": "حفظ وتحديد كمكتمل"
+    "saveAndMarkDone": "حفظ وتحديد كمكتمل",
+    "assignedDoctor": "الطبيب المسؤول",
+    "readOnlyDoctor": "عرض الطبيب للقراءة فقط.",
+    "patientReadOnlyDoctor": "بيانات المريض للقراءة فقط. يمكنك حفظ المعاينة أدناه.",
+    "consultationTitle": "معاينة الطبيب",
+    "diagnosis": "التشخيص",
+    "doctorNotes": "ملاحظات الطبيب",
+    "prescription": "الوصفة",
+    "consultationStatus": "حالة الحالة",
+    "consultationUpdated": "تم تحديث المعاينة",
+    "saveConsultation": "حفظ المعاينة",
+    "saveConsultationError": "تعذر حفظ المعاينة."
   }
 }

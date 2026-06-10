@@ -24,18 +24,22 @@ const seedAdmin = async () => {
 
     if (existingAdmin) {
       existingAdmin.name = ADMIN_NAME;
+      existingAdmin.fullName = ADMIN_NAME;
       existingAdmin.password = ADMIN_PASSWORD;
       existingAdmin.role = 'admin';
       existingAdmin.status = 'active';
+      existingAdmin.isActive = true;
       await existingAdmin.save();
       console.log(`✓ Default admin user refreshed successfully!`);
     } else {
       const adminUser = new User({
         name: ADMIN_NAME,
+        fullName: ADMIN_NAME,
         email: ADMIN_EMAIL,
         password: ADMIN_PASSWORD,
         role: 'admin',
-        status: 'active'
+        status: 'active',
+        isActive: true
       });
 
       await adminUser.save();

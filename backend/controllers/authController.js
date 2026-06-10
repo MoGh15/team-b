@@ -54,6 +54,13 @@ exports.login = async (req, res) => {
       });
     }
 
+    if (user.status !== 'active' || user.isActive === false) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Account is inactive'
+      });
+    }
+
     // Create token
     const token = generateToken(user._id);
 
@@ -64,8 +71,11 @@ exports.login = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
+        fullName: user.fullName || user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        specialization: user.specialization,
+        isActive: user.isActive !== false && user.status === 'active'
       }
     });
   } catch (error) {

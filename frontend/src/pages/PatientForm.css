@@ -139,6 +139,7 @@
 }
 
 .text-field input,
+.text-field select,
 .inline-add input,
 .floating-field select,
 .floating-field textarea {
@@ -153,6 +154,7 @@
 }
 
 .text-field input:focus,
+.text-field select:focus,
 .inline-add input:focus,
 .floating-field select:focus,
 .floating-field textarea:focus {
@@ -163,6 +165,16 @@
 .text-field .input-error {
   border-color: #c2413d;
   background: #fff8f7;
+}
+
+.text-field select:disabled {
+  cursor: not-allowed;
+  color: #687284;
+  background: #f3f5f9;
+}
+
+.doctor-load-error {
+  margin: 12px 0 0;
 }
 
 .text-field span,

@@ -76,10 +76,12 @@ exports.createUser = async (req, res) => {
     // Create new user
     const user = await User.create({
       name,
+      fullName: name,
       email,
       password,
       role: role || 'receptionist',
-      status: status || 'active'
+      status: status || 'active',
+      isActive: (status || 'active') === 'active'
     });
 
     // Remove password from response
@@ -118,9 +120,15 @@ exports.updateUser = async (req, res) => {
     }
 
     // Update fields
-    if (name) user.name = name;
+    if (name) {
+      user.name = name;
+      user.fullName = name;
+    }
     if (role) user.role = role;
-    if (status) user.status = status;
+    if (status) {
+      user.status = status;
+      user.isActive = status === 'active';
+    }
     if (password) user.password = password;
 
     // Save user

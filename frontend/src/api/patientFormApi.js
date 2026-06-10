@@ -14,6 +14,47 @@ const isLocalAdminSession = () => {
   return localStorage.getItem('authToken')?.startsWith('local-admin-')
 }
 
+const isLocalDoctorSession = () => {
+  return localStorage.getItem('authToken')?.startsWith('local-doctor-')
+}
+
+const isLocalSession = () => {
+  return isLocalAdminSession() || isLocalDoctorSession()
+}
+
+const getAuthUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem('authUser') || 'null')
+  } catch (error) {
+    return null
+  }
+}
+
+const getFormDoctorId = (form) => {
+  if (!form?.doctorId) {
+    return ''
+  }
+
+  return typeof form.doctorId === 'object' ? form.doctorId._id : form.doctorId
+}
+
+const filterLocalForms = (forms, params = {}) => {
+  return forms.filter((form) => {
+    const matchesDoctor = !params.doctorId || getFormDoctorId(form) === params.doctorId
+    const matchesStatus = !params.status || form.status === params.status
+
+    return matchesDoctor && matchesStatus
+  })
+}
+
+const getPatientFormsListEndpoint = () => {
+  return getAuthUser()?.role === 'doctor' ? '/doctor/patient-forms' : '/admin/patient-forms'
+}
+
+const getPatientFormDetailsEndpoint = (id) => {
+  return getAuthUser()?.role === 'doctor' ? `/doctor/patient-forms/${id}` : `/admin/patient-forms/${id}`
+}
+
 const readLocalForms = () => {
   try {
     return JSON.parse(localStorage.getItem(LOCAL_FORMS_KEY) || '[]')
@@ -92,20 +133,44 @@ const updateLocalForm = (id, updates) => {
   return updatedForm
 }
 
+const updateLocalDoctorConsultation = (id, updates) => {
+  const authUser = getAuthUser()
+  const localForm = findLocalForm(id)
+
+  if (!localForm) {
+    return null
+  }
+
+  if (authUser?.role === 'doctor' && getFormDoctorId(localForm) !== authUser.id) {
+    const error = new Error('Doctors can only update patient forms assigned to them')
+    error.response = { status: 403, data: { message: error.message } }
+    throw error
+  }
+
+  const now = new Date().toISOString()
+  return updateLocalForm(id, {
+    consultation: {
+      diagnosis: updates.diagnosis || '',
+      notes: updates.notes || '',
+      prescription: updates.prescription || '',
+      updatedAt: now,
+      updatedBy: authUser?.id,
+    },
+    status: updates.status || localForm.status,
+    statusUpdatedAt: updates.status ? now : localForm.statusUpdatedAt,
+  })
+}
+
 export const patientFormApi = {
   submit: async (formData) => {
-    const localForm = createLocalForm(formData)
-
     try {
       const response = await api.post('/patient-forms', formData)
       const remoteId = response.data?.data?.id
-
-      if (remoteId) {
-        updateLocalForm(localForm._id, {
-          remoteId,
-          savedRemotely: true,
-        })
-      }
+      const localForm = createLocalForm({
+        ...formData,
+        remoteId,
+        savedRemotely: Boolean(remoteId),
+      })
 
       return {
         ...response,
@@ -119,6 +184,14 @@ export const patientFormApi = {
         },
       }
     } catch (error) {
+      const hasLocalDoctor = String(formData.doctorId || '').startsWith('local-doctor-')
+
+      if (!isRecoverableApiFailure(error) && !hasLocalDoctor) {
+        throw error
+      }
+
+      const localForm = createLocalForm(formData)
+
       return {
         data: {
           status: 'success',
@@ -133,9 +206,11 @@ export const patientFormApi = {
     }
   },
   getAll: async (params = {}) => {
-    const localForms = readLocalForms()
+    const authUser = getAuthUser()
+    const localParams = authUser?.role === 'doctor' ? { ...params, doctorId: authUser.id } : params
+    const localForms = filterLocalForms(readLocalForms(), localParams)
 
-    if (isLocalAdminSession()) {
+    if (isLocalSession()) {
       return {
         data: {
           status: 'success',
@@ -147,7 +222,7 @@ export const patientFormApi = {
     }
 
     try {
-      const response = await api.get('/patient-forms', { params })
+      const response = await api.get(getPatientFormsListEndpoint(), { params })
       const remoteForms = response.data?.data || []
       const remoteIds = new Set(remoteForms.map((form) => form._id).filter(Boolean))
       const visibleLocalForms = localForms.filter((form) => !remoteIds.has(form.remoteId))
@@ -161,7 +236,7 @@ export const patientFormApi = {
         },
       }
     } catch (error) {
-      if (!isRecoverableApiFailure(error) && ![401, 403, 404].includes(error.response?.status)) {
+      if (!isRecoverableApiFailure(error)) {
         throw error
       }
 
@@ -177,8 +252,15 @@ export const patientFormApi = {
   },
   getById: async (id) => {
     const localForm = findLocalForm(id)
+    const authUser = getAuthUser()
 
     if (localForm) {
+      if (authUser?.role === 'doctor' && getFormDoctorId(localForm) !== authUser.id) {
+        const error = new Error('Doctors can only access patient forms assigned to them')
+        error.response = { status: 403, data: { message: error.message } }
+        throw error
+      }
+
       return {
         data: {
           status: 'success',
@@ -188,7 +270,7 @@ export const patientFormApi = {
       }
     }
 
-    return api.get(`/patient-forms/${id}`)
+    return api.get(getPatientFormDetailsEndpoint(id))
   },
   update: async (id, updates) => {
     const localForm = findLocalForm(id)
@@ -221,6 +303,25 @@ export const patientFormApi = {
     }
 
     return api.patch(`/patient-forms/${id}/status`, { status })
+  },
+  updateDoctorConsultation: async (id, updates) => {
+    const localForm = findLocalForm(id)
+
+    if (localForm || isLocalDoctorSession()) {
+      const updatedForm = updateLocalDoctorConsultation(id, updates)
+
+      if (updatedForm) {
+        return {
+          data: {
+            status: 'success',
+            data: updatedForm,
+            savedLocally: true,
+          },
+        }
+      }
+    }
+
+    return api.patch(`/doctor/patient-forms/${id}/consultation`, updates)
   },
 }
 

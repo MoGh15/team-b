@@ -24,6 +24,7 @@ import LanguageSwitcher from '../components/LanguageSwitcher'
 import {
   formatDate,
   formatDateTime,
+  getAssignedDoctorName,
   getPatientName,
   getStatusLabel,
   normalizeStatus,
@@ -57,11 +58,26 @@ const createEditDraft = (source) => ({
   medicationsText: (source.medications || []).join('\n'),
 })
 
+const createConsultationDraft = (source) => ({
+  diagnosis: source?.consultation?.diagnosis || '',
+  notes: source?.consultation?.notes || '',
+  prescription: source?.consultation?.prescription || '',
+  status: normalizeStatus(source?.status),
+})
+
 const splitList = (value) =>
   value
     .split(/[\n,]/)
     .map((item) => item.trim())
     .filter(Boolean)
+
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem('authUser') || 'null')
+  } catch (error) {
+    return null
+  }
+}
 
 function SubmissionDetails() {
   const { t, i18n } = useTranslation()
@@ -71,9 +87,12 @@ function SubmissionDetails() {
   const [saving, setSaving] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editDraft, setEditDraft] = useState(null)
+  const [consultationDraft, setConsultationDraft] = useState(null)
 
   const { id } = useParams()
   const navigate = useNavigate()
+  const authUser = getStoredUser()
+  const isDoctor = authUser?.role === 'doctor'
 
   const fetchForm = async () => {
     try {
@@ -82,11 +101,14 @@ function SubmissionDetails() {
       const response = await patientFormApi.getById(id)
       const nextForm = response.data?.data
 
-      if (normalizeStatus(nextForm?.status) === 'NEW') {
+      if (!isDoctor && normalizeStatus(nextForm?.status) === 'NEW') {
         const viewedResponse = await patientFormApi.updateStatus(id, 'VIEWED')
-        setForm(viewedResponse.data?.data || nextForm)
+        const viewedForm = viewedResponse.data?.data || nextForm
+        setForm(viewedForm)
+        setConsultationDraft(createConsultationDraft(viewedForm))
       } else {
         setForm(nextForm)
+        setConsultationDraft(createConsultationDraft(nextForm))
       }
 
       setIsEditing(false)
@@ -104,6 +126,9 @@ function SubmissionDetails() {
 
   const patient = form?.patient || {}
   const status = normalizeStatus(form?.status)
+  const hasConsultation = Boolean(
+    form?.consultation?.diagnosis || form?.consultation?.notes || form?.consultation?.prescription
+  )
 
   const address = useMemo(() => {
     return [
@@ -184,6 +209,28 @@ function SubmissionDetails() {
     }
   }
 
+  const updateConsultationDraft = (field, value) => {
+    setConsultationDraft((current) => ({
+      ...current,
+      [field]: value,
+    }))
+  }
+
+  const saveDoctorConsultation = async () => {
+    try {
+      setSaving(true)
+      setError('')
+      const response = await patientFormApi.updateDoctorConsultation(id, consultationDraft)
+      const updatedForm = response.data?.data
+      setForm(updatedForm)
+      setConsultationDraft(createConsultationDraft(updatedForm))
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || t('submissionDetails.saveConsultationError'))
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const translateSymptom = (name) => t(`medical.symptoms.${name}`, { defaultValue: name })
   const translateSymptomSelection = (value) => t(`medical.symptomSelections.${value}`, { defaultValue: value })
   const translateDuration = (value) => t(`medical.duration.${value}`, { defaultValue: value })
@@ -193,7 +240,7 @@ function SubmissionDetails() {
   return (
     <main className="submission-page">
       <header className="submission-topbar">
-        <button type="button" className="back-button" onClick={() => navigate('/admin/submissions')}>
+        <button type="button" className="back-button" onClick={() => navigate(isDoctor ? '/doctor' : '/admin/submissions')}>
           <ArrowLeft size={18} />
           {t('submissionDetails.title')}
         </button>
@@ -239,6 +286,7 @@ function SubmissionDetails() {
                 <DetailItem label={t('patient.email')} value={patient.email || '-'} icon={Mail} autoDir />
                 <DetailItem label={t('adminDashboard.created')} value={formatDateTime(form.submittedAt || form.createdAt, i18n.resolvedLanguage)} />
                 <DetailItem label={t('patient.address')} value={address || '-'} icon={MapPin} autoDir />
+                <DetailItem label={t('submissionDetails.assignedDoctor')} value={getAssignedDoctorName(form)} icon={Stethoscope} autoDir />
                 <DetailItem label={t('patient.id')} value={form._id} wide />
               </div>
             )}
@@ -330,6 +378,59 @@ function SubmissionDetails() {
             </TwoColumnDetails>
           </section>
 
+          {(isDoctor || hasConsultation) && (
+            <section className="detail-section">
+              <div className="detail-section__title">
+                <ClipboardList size={20} />
+                <h2>{t('submissionDetails.consultationTitle')}</h2>
+              </div>
+
+              {isDoctor && consultationDraft ? (
+                <div className="consultation-edit-grid">
+                  <EditTextArea
+                    label={t('submissionDetails.diagnosis')}
+                    value={consultationDraft.diagnosis}
+                    onChange={(value) => updateConsultationDraft('diagnosis', value)}
+                  />
+                  <EditTextArea
+                    label={t('submissionDetails.doctorNotes')}
+                    value={consultationDraft.notes}
+                    onChange={(value) => updateConsultationDraft('notes', value)}
+                  />
+                  <EditTextArea
+                    label={t('submissionDetails.prescription')}
+                    value={consultationDraft.prescription}
+                    onChange={(value) => updateConsultationDraft('prescription', value)}
+                  />
+                  <label className="edit-field edit-field--wide">
+                    <span>{t('submissionDetails.consultationStatus')}</span>
+                    <select
+                      value={consultationDraft.status}
+                      onChange={(event) => updateConsultationDraft('status', event.target.value)}
+                    >
+                      {statusOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {getStatusLabel(option, t)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+              ) : (
+                <div className="patient-summary-grid">
+                  <DetailItem label={t('submissionDetails.diagnosis')} value={form.consultation?.diagnosis || '-'} autoDir wide />
+                  <DetailItem label={t('submissionDetails.doctorNotes')} value={form.consultation?.notes || '-'} autoDir wide />
+                  <DetailItem label={t('submissionDetails.prescription')} value={form.consultation?.prescription || '-'} autoDir wide />
+                  <DetailItem
+                    label={t('submissionDetails.consultationUpdated')}
+                    value={formatDateTime(form.consultation?.updatedAt, i18n.resolvedLanguage)}
+                    wide
+                  />
+                </div>
+              )}
+            </section>
+          )}
+
           <section className="detail-section">
             <div className="detail-section__title">
               <ClipboardList size={20} />
@@ -376,7 +477,24 @@ function SubmissionDetails() {
           </section>
 
           <footer className="submission-actions">
-            {isEditing ? (
+            {isDoctor ? (
+              <>
+                <button type="button" className="admin-action admin-action--plain" onClick={fetchForm}>
+                  <RefreshCcw size={17} />
+                  {t('submissionDetails.refresh')}
+                </button>
+                <span className="read-only-note">{t('submissionDetails.patientReadOnlyDoctor')}</span>
+                <button
+                  type="button"
+                  className="admin-action admin-action--primary"
+                  disabled={saving || !consultationDraft}
+                  onClick={saveDoctorConsultation}
+                >
+                  {saving ? <Loader2 className="submission-spinner" size={17} /> : <Save size={17} />}
+                  {t('submissionDetails.saveConsultation')}
+                </button>
+              </>
+            ) : isEditing ? (
               <>
                 <button type="button" className="admin-action admin-action--plain" onClick={cancelEditing}>
                   <X size={17} />

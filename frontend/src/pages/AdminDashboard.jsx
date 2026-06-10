@@ -8,12 +8,19 @@ import {
   ChevronsRight,
   Eye,
   Filter,
+  Pencil,
   Loader2,
   LogOut,
+  Power,
   RefreshCcw,
+  Save,
   Search,
+  Stethoscope,
+  X,
+  UserPlus,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { doctorApi } from '../api/doctorApi'
 import { patientFormApi } from '../api/patientFormApi'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import './AdminDashboard.css'
@@ -30,20 +37,40 @@ const pageSizeOptions = [10, 25, 50]
 function AdminDashboard() {
   const { t, i18n } = useTranslation()
   const [forms, setForms] = useState([])
+  const [doctors, setDoctors] = useState([])
   const [activeStatus, setActiveStatus] = useState('ALL')
+  const [doctorFilter, setDoctorFilter] = useState('ALL')
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [loading, setLoading] = useState(true)
+  const [doctorsLoading, setDoctorsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [doctorMessage, setDoctorMessage] = useState(null)
+  const [doctorSaving, setDoctorSaving] = useState(false)
+  const [doctorUpdatingId, setDoctorUpdatingId] = useState('')
+  const [editingDoctorId, setEditingDoctorId] = useState('')
+  const [doctorEditDraft, setDoctorEditDraft] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    specialization: '',
+  })
+  const [doctorDraft, setDoctorDraft] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    specialization: '',
+  })
 
   const navigate = useNavigate()
 
-  const fetchForms = async () => {
+  const fetchForms = async (filterValue = doctorFilter) => {
     try {
       setLoading(true)
       setError('')
-      const response = await patientFormApi.getAll()
+      const params = filterValue !== 'ALL' ? { doctorId: filterValue } : {}
+      const response = await patientFormApi.getAll(params)
       setForms(response.data?.data || [])
     } catch (requestError) {
       setError(requestError.response?.data?.message || t('adminDashboard.loadError'))
@@ -52,13 +79,178 @@ function AdminDashboard() {
     }
   }
 
-  useEffect(() => {
+  const fetchDoctors = async () => {
+    try {
+      setDoctorsLoading(true)
+      const response = await doctorApi.getAdminDoctors()
+      setDoctors(response.data?.data || [])
+    } catch (requestError) {
+      setDoctorMessage({
+        type: 'error',
+        text: requestError.response?.data?.message || t('adminDashboard.doctorLoadError'),
+      })
+    } finally {
+      setDoctorsLoading(false)
+    }
+  }
+
+  const refreshDashboard = () => {
+    fetchDoctors()
     fetchForms()
+  }
+
+  useEffect(() => {
+    fetchDoctors()
   }, [])
 
   useEffect(() => {
+    fetchForms(doctorFilter)
+  }, [doctorFilter])
+
+  useEffect(() => {
     setPage(1)
-  }, [activeStatus, query, pageSize])
+  }, [activeStatus, doctorFilter, query, pageSize])
+
+  const updateDoctorDraft = (field, value) => {
+    setDoctorDraft((current) => ({
+      ...current,
+      [field]: value,
+    }))
+  }
+
+  const startEditingDoctor = (doctor) => {
+    setDoctorMessage(null)
+    setEditingDoctorId(doctor._id)
+    setDoctorEditDraft({
+      fullName: getDoctorName(doctor) === '-' ? '' : getDoctorName(doctor),
+      email: doctor.email || '',
+      password: '',
+      specialization: doctor.specialization || '',
+    })
+  }
+
+  const cancelEditingDoctor = () => {
+    setEditingDoctorId('')
+    setDoctorEditDraft({
+      fullName: '',
+      email: '',
+      password: '',
+      specialization: '',
+    })
+  }
+
+  const updateDoctorEditDraft = (field, value) => {
+    setDoctorEditDraft((current) => ({
+      ...current,
+      [field]: value,
+    }))
+  }
+
+  const saveDoctorEdit = async (doctorId) => {
+    if (!doctorEditDraft.fullName.trim() || !doctorEditDraft.email.trim()) {
+      setDoctorMessage({
+        type: 'error',
+        text: t('adminDashboard.updateDoctorError'),
+      })
+      return
+    }
+
+    try {
+      setDoctorUpdatingId(doctorId)
+      setDoctorMessage(null)
+      const payload = {
+        fullName: doctorEditDraft.fullName.trim(),
+        email: doctorEditDraft.email.trim(),
+        specialization: doctorEditDraft.specialization.trim(),
+      }
+
+      if (doctorEditDraft.password) {
+        payload.password = doctorEditDraft.password
+      }
+
+      const response = await doctorApi.updateDoctor(doctorId, payload)
+      const updatedDoctor = response.data?.data
+
+      setDoctors((current) =>
+        current.map((currentDoctor) => (currentDoctor._id === doctorId ? updatedDoctor : currentDoctor))
+      )
+      cancelEditingDoctor()
+      setDoctorMessage({
+        type: 'success',
+        text: t('adminDashboard.updateDoctorSuccess'),
+      })
+    } catch (requestError) {
+      setDoctorMessage({
+        type: 'error',
+        text: requestError.response?.data?.message || t('adminDashboard.updateDoctorError'),
+      })
+    } finally {
+      setDoctorUpdatingId('')
+    }
+  }
+
+  const handleCreateDoctor = async (event) => {
+    event.preventDefault()
+    setDoctorMessage(null)
+
+    if (!doctorDraft.fullName.trim() || !doctorDraft.email.trim() || !doctorDraft.password) {
+      setDoctorMessage({
+        type: 'error',
+        text: t('adminDashboard.createDoctorError'),
+      })
+      return
+    }
+
+    try {
+      setDoctorSaving(true)
+      const response = await doctorApi.createDoctor({
+        fullName: doctorDraft.fullName.trim(),
+        email: doctorDraft.email.trim(),
+        password: doctorDraft.password,
+        specialization: doctorDraft.specialization.trim(),
+        isActive: true,
+      })
+
+      setDoctors((current) => [response.data?.data, ...current].filter(Boolean))
+      setDoctorDraft({
+        fullName: '',
+        email: '',
+        password: '',
+        specialization: '',
+      })
+      setDoctorMessage({
+        type: 'success',
+        text: t('adminDashboard.createDoctorSuccess'),
+      })
+    } catch (requestError) {
+      setDoctorMessage({
+        type: 'error',
+        text: requestError.response?.data?.message || t('adminDashboard.createDoctorError'),
+      })
+    } finally {
+      setDoctorSaving(false)
+    }
+  }
+
+  const toggleDoctorStatus = async (doctor) => {
+    try {
+      setDoctorUpdatingId(doctor._id)
+      setDoctorMessage(null)
+      const response = await doctorApi.updateDoctorStatus(doctor._id, !doctor.isActive)
+      const updatedDoctor = response.data?.data
+
+      setDoctors((current) =>
+        current.map((currentDoctor) => (currentDoctor._id === doctor._id ? updatedDoctor : currentDoctor))
+      )
+    } catch (requestError) {
+      setDoctorMessage({
+        type: 'error',
+        text: requestError.response?.data?.message || t('adminDashboard.updateDoctorStatusError'),
+      })
+    } finally {
+      setDoctorUpdatingId('')
+    }
+  }
 
   const statusCounts = useMemo(() => {
     return forms.reduce(
@@ -84,6 +276,7 @@ function AdminDashboard() {
         patient.email,
         patient.phone,
         patient.city,
+        getAssignedDoctorName(form),
         form._id,
       ]
         .filter(Boolean)
@@ -118,7 +311,7 @@ function AdminDashboard() {
         </div>
         <div className="admin-topbar__actions">
           <LanguageSwitcher />
-          <button type="button" className="admin-action admin-action--light" onClick={fetchForms}>
+          <button type="button" className="admin-action admin-action--light" onClick={refreshDashboard}>
             <RefreshCcw size={18} />
             {t('common.refresh')}
           </button>
@@ -128,6 +321,181 @@ function AdminDashboard() {
           </button>
         </div>
       </header>
+
+      <section className="admin-panel doctor-management-panel" aria-label={t('adminDashboard.doctorsTitle')}>
+        <div className="panel-heading-row">
+          <div className="section-heading-inline">
+            <Stethoscope size={22} />
+            <div>
+              <h2>{t('adminDashboard.doctorsTitle')}</h2>
+              <p>{t('adminDashboard.doctorsSubtitle')}</p>
+            </div>
+          </div>
+        </div>
+
+        {doctorMessage && (
+          <div className={`admin-alert admin-alert--${doctorMessage.type}`}>
+            {doctorMessage.text}
+          </div>
+        )}
+
+        <form className="doctor-create-form" onSubmit={handleCreateDoctor}>
+          <label>
+            <span>{t('adminDashboard.fullName')}*</span>
+            <input
+              type="text"
+              value={doctorDraft.fullName}
+              autoComplete="name"
+              onChange={(event) => updateDoctorDraft('fullName', event.target.value)}
+            />
+          </label>
+          <label>
+            <span>{t('patient.email')}*</span>
+            <input
+              type="email"
+              value={doctorDraft.email}
+              autoComplete="email"
+              onChange={(event) => updateDoctorDraft('email', event.target.value)}
+            />
+          </label>
+          <label>
+            <span>{t('adminDashboard.password')}*</span>
+            <input
+              type="password"
+              value={doctorDraft.password}
+              autoComplete="new-password"
+              onChange={(event) => updateDoctorDraft('password', event.target.value)}
+            />
+          </label>
+          <label>
+            <span>{t('adminDashboard.specialization')}</span>
+            <input
+              type="text"
+              value={doctorDraft.specialization}
+              onChange={(event) => updateDoctorDraft('specialization', event.target.value)}
+            />
+          </label>
+          <button type="submit" className="admin-action admin-action--primary" disabled={doctorSaving}>
+            {doctorSaving ? <Loader2 className="spin-icon" size={18} /> : <UserPlus size={18} />}
+            {t('adminDashboard.createDoctor')}
+          </button>
+        </form>
+
+        <div className="doctors-list">
+          {doctorsLoading && (
+            <div className="table-loading">
+              <Loader2 size={22} />
+              {t('adminDashboard.loading')}
+            </div>
+          )}
+
+          {!doctorsLoading &&
+            doctors.map((doctor) => {
+              const isEditing = editingDoctorId === doctor._id
+
+              return (
+                <article className={`doctor-row${isEditing ? ' doctor-row--editing' : ''}`} key={doctor._id}>
+                  {isEditing ? (
+                    <div className="doctor-edit-grid">
+                      <label>
+                        <span>{t('adminDashboard.fullName')}*</span>
+                        <input
+                          type="text"
+                          value={doctorEditDraft.fullName}
+                          onChange={(event) => updateDoctorEditDraft('fullName', event.target.value)}
+                        />
+                      </label>
+                      <label>
+                        <span>{t('patient.email')}*</span>
+                        <input
+                          type="email"
+                          value={doctorEditDraft.email}
+                          onChange={(event) => updateDoctorEditDraft('email', event.target.value)}
+                        />
+                      </label>
+                      <label>
+                        <span>{t('adminDashboard.specialization')}</span>
+                        <input
+                          type="text"
+                          value={doctorEditDraft.specialization}
+                          onChange={(event) => updateDoctorEditDraft('specialization', event.target.value)}
+                        />
+                      </label>
+                      <label>
+                        <span>{t('adminDashboard.password')}</span>
+                        <input
+                          type="password"
+                          value={doctorEditDraft.password}
+                          placeholder={t('adminDashboard.keepPasswordPlaceholder')}
+                          onChange={(event) => updateDoctorEditDraft('password', event.target.value)}
+                        />
+                      </label>
+                    </div>
+                  ) : (
+                    <div className="doctor-row__summary">
+                      <strong>{getDoctorName(doctor)}</strong>
+                      <span>{doctor.email}</span>
+                      {doctor.specialization && <small>{doctor.specialization}</small>}
+                    </div>
+                  )}
+
+                  <span className={`doctor-status doctor-status--${doctor.isActive ? 'active' : 'inactive'}`}>
+                    {doctor.isActive ? t('common.active') : t('common.inactive')}
+                  </span>
+
+                  <div className="doctor-row-actions">
+                    {isEditing ? (
+                      <>
+                        <button
+                          type="button"
+                          className="admin-action admin-action--plain"
+                          disabled={doctorUpdatingId === doctor._id}
+                          onClick={cancelEditingDoctor}
+                        >
+                          <X size={17} />
+                          {t('common.cancel')}
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-action admin-action--primary"
+                          disabled={doctorUpdatingId === doctor._id}
+                          onClick={() => saveDoctorEdit(doctor._id)}
+                        >
+                          {doctorUpdatingId === doctor._id ? <Loader2 className="spin-icon" size={17} /> : <Save size={17} />}
+                          {t('common.save')}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="admin-action admin-action--plain"
+                          onClick={() => startEditingDoctor(doctor)}
+                        >
+                          <Pencil size={17} />
+                          {t('adminDashboard.editDoctor')}
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-action admin-action--plain"
+                          disabled={doctorUpdatingId === doctor._id}
+                          onClick={() => toggleDoctorStatus(doctor)}
+                        >
+                          {doctorUpdatingId === doctor._id ? <Loader2 className="spin-icon" size={17} /> : <Power size={17} />}
+                          {doctor.isActive ? t('adminDashboard.deactivateDoctor') : t('adminDashboard.activateDoctor')}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </article>
+              )
+            })}
+
+          {!doctorsLoading && doctors.length === 0 && (
+            <div className="empty-table-state">{t('adminDashboard.noDoctors')}</div>
+          )}
+        </div>
+      </section>
 
       <section className="admin-panel" aria-label={t('adminDashboard.tableAria')}>
         <div className="dashboard-toolbar">
@@ -146,15 +514,34 @@ function AdminDashboard() {
             ))}
           </div>
 
-          <label className="dashboard-search">
-            <Search size={18} />
-            <input
-              type="search"
-              value={query}
-              placeholder={t('adminDashboard.searchPlaceholder')}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </label>
+          <div className="dashboard-filters">
+            <label className="dashboard-select">
+              <Filter size={18} />
+              <select
+                value={doctorFilter}
+                aria-label={t('adminDashboard.doctorFilter')}
+                title={t('adminDashboard.doctorFilter')}
+                onChange={(event) => setDoctorFilter(event.target.value)}
+              >
+                <option value="ALL">{t('adminDashboard.allDoctors')}</option>
+                {doctors.map((doctor) => (
+                  <option key={doctor._id} value={doctor._id}>
+                    {getDoctorName(doctor)}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="dashboard-search">
+              <Search size={18} />
+              <input
+                type="search"
+                value={query}
+                placeholder={t('adminDashboard.searchPlaceholder')}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </label>
+          </div>
         </div>
 
         {error && <div className="admin-alert admin-alert--error">{error}</div>}
@@ -172,13 +559,14 @@ function AdminDashboard() {
                 </th>
                 <th>{t('adminDashboard.created')}</th>
                 <th>{t('adminDashboard.birthDate')}</th>
+                <th>{t('adminDashboard.assignedDoctor')}</th>
                 <th>{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan="5">
+                  <td colSpan="6">
                     <div className="table-loading">
                       <Loader2 size={22} />
                       {t('adminDashboard.loading')}
@@ -208,6 +596,9 @@ function AdminDashboard() {
                       <td data-label={t('adminDashboard.birthDate')}>
                         {formatDate(patient.birthDate, i18n.resolvedLanguage)}
                       </td>
+                      <td data-label={t('adminDashboard.assignedDoctor')}>
+                        {getAssignedDoctorName(form)}
+                      </td>
                       <td data-label={t('common.actions')}>
                         <button
                           type="button"
@@ -224,7 +615,7 @@ function AdminDashboard() {
 
               {!loading && visibleForms.length === 0 && (
                 <tr>
-                  <td colSpan="5">
+                  <td colSpan="6">
                     <div className="empty-table-state">
                       {forms.length === 0 ? t('adminDashboard.noSubmittedForms') : t('adminDashboard.noMatchingForms')}
                     </div>
@@ -320,6 +711,22 @@ export function getStatusLabel(status, t) {
 export function getPatientName(patient = {}) {
   const fullName = [patient.firstName, patient.lastName].filter(Boolean).join(' ').trim()
   return fullName || '-'
+}
+
+export function getDoctorName(doctor = {}) {
+  return doctor.fullName || doctor.name || '-'
+}
+
+export function getAssignedDoctorName(form = {}) {
+  if (form.doctorName) {
+    return form.doctorName
+  }
+
+  if (form.doctorId && typeof form.doctorId === 'object') {
+    return getDoctorName(form.doctorId)
+  }
+
+  return '-'
 }
 
 function getDateLocale(language = 'de') {

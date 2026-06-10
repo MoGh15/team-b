@@ -4,6 +4,16 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { authApi } from '../api/authApi'
 import './AdminLogin.css'
 
+const getRoleHome = (role) => (role === 'doctor' ? '/doctor' : '/admin/submissions')
+
+const canUseTargetPath = (role, targetPath) => {
+  if (role === 'doctor') {
+    return targetPath.startsWith('/doctor')
+  }
+
+  return targetPath.startsWith('/admin')
+}
+
 function AdminLogin() {
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
@@ -48,7 +58,9 @@ function AdminLogin() {
 
       localStorage.setItem('authToken', response.data.token)
       localStorage.setItem('authUser', JSON.stringify(response.data.user))
-      navigate(targetPath, { replace: true })
+      const role = response.data.user?.role
+      const nextPath = canUseTargetPath(role, targetPath) ? targetPath : getRoleHome(role)
+      navigate(nextPath, { replace: true })
     } catch (error) {
       setLoginError(
         error.response?.data?.message ||
@@ -85,7 +97,7 @@ function AdminLogin() {
             <LockKeyhole size={25} />
           </div>
           <div>
-            <h1 id="admin-login-title">Admin Login</h1>
+            <h1 id="admin-login-title">Admin / Doctor Login</h1>
             <p>Bitte melde dich an</p>
           </div>
         </div>
