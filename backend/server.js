@@ -30,6 +30,7 @@ const patientFormRoutes = require('./routes/patientForms');
 const doctorRoutes = require('./routes/doctors');
 const adminRoutes = require('./routes/admin');
 const doctorDashboardRoutes = require('./routes/doctor');
+const appointmentRoutes = require('./routes/appointments');
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -47,6 +48,7 @@ app.use('/api/patient-forms', patientFormRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/doctor', doctorDashboardRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 // 404 handler
 app.use((req, res) => {

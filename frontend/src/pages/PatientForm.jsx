@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   Activity,
@@ -114,6 +115,8 @@ function PatientForm() {
   const [errors, setErrors] = useState({})
   const [statusMessage, setStatusMessage] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const navigate = useNavigate()
 
   const fileInputRef = useRef(null)
   const signatureCanvasRef = useRef(null)
@@ -516,7 +519,17 @@ function PatientForm() {
 
     try {
       setIsSubmitting(true)
-      const response = await patientFormApi.submit(payload)
+     const response = await patientFormApi.submit(payload)
+      console.log(response)
+      const returnedId = response.data?.data?.id || response.data?.data?.localCopyId || response.data?.data?._id || ''
+      if (returnedId) {
+        localStorage.setItem('patientFormId', returnedId)
+      }
+      
+      // Redirect to appointment booking with the created form id
+      if (returnedId) {
+        navigate(`/appointments/new?patientFormId=${encodeURIComponent(returnedId)}`)
+      }
       setStatusMessage({
         type: 'success',
         text: response.data?.savedLocally

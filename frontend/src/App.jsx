@@ -1,7 +1,9 @@
 import React from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import UserManagement from './pages/UserManagement'
 import PatientForm from './pages/PatientForm'
+import AppointmentBooking from './pages/AppointmentBooking'
+import Appointments from './pages/Appointments'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import DoctorDashboard from './pages/DoctorDashboard'
@@ -45,6 +47,11 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app-container">
+        <nav className="app-nav">
+          <Link to="/">Patient Form</Link>
+          <Link to="/appointments/new">Book Appointment</Link>
+          <Link to="/appointments">Appointments</Link>
+        </nav>
         <Routes>
           <Route path="/" element={<PatientForm />} />
           <Route path="/login" element={<AdminLogin />} />
@@ -97,6 +104,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/appointments/new" element={<AppointmentBooking />} />
+          <Route path="/appointments" element={<Appointments />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <CookieConsent />
