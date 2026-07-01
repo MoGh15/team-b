@@ -22,7 +22,6 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { doctorApi } from '../api/doctorApi'
 import { patientFormApi } from '../api/patientFormApi'
-import LanguageSwitcher from '../components/LanguageSwitcher'
 import './AdminDashboard.css'
 
 const statusFilters = [
@@ -310,7 +309,6 @@ function AdminDashboard() {
           <h1>{t('adminDashboard.title')}</h1>
         </div>
         <div className="admin-topbar__actions">
-          <LanguageSwitcher />
           <button type="button" className="admin-action admin-action--light" onClick={refreshDashboard}>
             <RefreshCcw size={18} />
             {t('common.refresh')}

@@ -16,6 +16,10 @@ const workingHours = [
   '13:00'
 ];
 
+const allowedLanguages = ['de', 'en', 'ar'];
+
+const normalizeLanguage = (language) => (allowedLanguages.includes(language) ? language : 'de');
+
 const normalizeDate = (dateValue) => {
   const date = new Date(dateValue);
   if (Number.isNaN(date.getTime())) {
@@ -29,7 +33,7 @@ const isValidTime = (time) => workingHours.includes(time);
 
 exports.createAppointment = async (req, res) => {
   try {
-    const { patientFormId, patientName, appointmentDate, appointmentTime, notes } = req.body;
+    const { patientFormId, patientName, appointmentDate, appointmentTime, notes, language } = req.body;
 
     // Accept either a valid patientFormId OR a patientName
     let linkedPatientForm = null;
@@ -79,6 +83,7 @@ exports.createAppointment = async (req, res) => {
     }
 
     const appointment = await Appointment.create({
+      language: linkedPatientForm ? normalizeLanguage(linkedPatientForm.language) : normalizeLanguage(language),
       patientFormId: linkedPatientForm ? linkedPatientForm._id : undefined,
       patientName: linkedPatientForm ? `${linkedPatientForm.patient?.firstName || ''} ${linkedPatientForm.patient?.lastName || ''}`.trim() : patientName,
       appointmentDate: date,
@@ -103,7 +108,7 @@ exports.getAppointments = async (req, res) => {
     const appointments = await Appointment.find()
       .populate({
         path: 'patientFormId',
-        select: 'patient doctorName submittedAt'
+        select: 'patient doctorName language submittedAt'
       })
       .sort({ appointmentDate: 1, appointmentTime: 1 });
 
@@ -124,7 +129,7 @@ exports.getAppointment = async (req, res) => {
   try {
     const appointment = await Appointment.findById(req.params.id).populate({
       path: 'patientFormId',
-      select: 'patient doctorName submittedAt'
+      select: 'patient doctorName language submittedAt'
     });
 
     if (!appointment) {

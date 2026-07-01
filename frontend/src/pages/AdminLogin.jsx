@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
-import { Eye, EyeOff, Languages, Loader2, LockKeyhole, LogIn, UserRound } from 'lucide-react'
+import { Eye, EyeOff, Loader2, LockKeyhole, LogIn, UserRound } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { authApi } from '../api/authApi'
 import './AdminLogin.css'
+
+const DEFAULT_ADMIN_EMAIL = 'admin@example.com'
+const DEFAULT_ADMIN_PASSWORD = 'admin123'
 
 const getRoleHome = (role) => (role === 'doctor' ? '/doctor' : '/admin/submissions')
 
@@ -15,6 +19,7 @@ const canUseTargetPath = (role, targetPath) => {
 }
 
 function AdminLogin() {
+  const { t } = useTranslation()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -30,11 +35,11 @@ function AdminLogin() {
     const nextErrors = {}
 
     if (!identifier.trim()) {
-      nextErrors.identifier = 'Benutzername ist erforderlich.'
+      nextErrors.identifier = t('adminLogin.identifierRequired')
     }
 
     if (!password) {
-      nextErrors.password = 'Passwort ist erforderlich.'
+      nextErrors.password = t('adminLogin.passwordRequired')
     }
 
     setErrors(nextErrors)
@@ -64,7 +69,7 @@ function AdminLogin() {
     } catch (error) {
       setLoginError(
         error.response?.data?.message ||
-          'Anmeldung fehlgeschlagen. Bitte admin@example.com / admin123 pruefen oder Backend starten.'
+          t('adminLogin.loginError')
       )
     } finally {
       setIsSubmitting(false)
@@ -85,20 +90,58 @@ function AdminLogin() {
     }
   }
 
+  const useAdminCredentials = () => {
+    setIdentifier(DEFAULT_ADMIN_EMAIL)
+    setPassword(DEFAULT_ADMIN_PASSWORD)
+    setErrors({})
+    setLoginError('')
+  }
+
   return (
     <main className="admin-login-page">
       <section className="admin-login-card" aria-labelledby="admin-login-title">
-        <button type="button" className="language-button" aria-label="Sprache wechseln">
-          <Languages size={21} />
-        </button>
-
         <div className="login-heading">
           <div className="login-heading__icon">
             <LockKeyhole size={25} />
           </div>
           <div>
-            <h1 id="admin-login-title">Admin / Doctor Login</h1>
-            <p>Bitte melde dich an</p>
+            <h1 id="admin-login-title">{t('adminLogin.title')}</h1>
+            <p>{t('adminLogin.subtitle')}</p>
+          </div>
+        </div>
+
+        <div className="login-help">
+          <h2>{t('adminLogin.helpTitle')}</h2>
+          <p>{t('adminLogin.helpText')}</p>
+
+          <div className="login-credentials" aria-label={t('adminLogin.adminCredentialsTitle')}>
+            <div className="login-credentials__header">
+              <strong>{t('adminLogin.adminCredentialsTitle')}</strong>
+              <button type="button" onClick={useAdminCredentials}>
+                {t('adminLogin.useAdminCredentials')}
+              </button>
+            </div>
+            <dl>
+              <div>
+                <dt>{t('adminLogin.emailLabel')}</dt>
+                <dd>{DEFAULT_ADMIN_EMAIL}</dd>
+              </div>
+              <div>
+                <dt>{t('adminLogin.passwordLabel')}</dt>
+                <dd>{DEFAULT_ADMIN_PASSWORD}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div className="login-role-notes">
+            <p>
+              <strong>{t('adminLogin.adminRoleTitle')}</strong>
+              {t('adminLogin.adminRoleText')}
+            </p>
+            <p>
+              <strong>{t('adminLogin.doctorRoleTitle')}</strong>
+              {t('adminLogin.doctorRoleText')}
+            </p>
           </div>
         </div>
 
@@ -106,14 +149,14 @@ function AdminLogin() {
 
         <form className="login-form" onSubmit={handleSubmit} noValidate>
           <div className="login-field">
-            <label htmlFor="adminIdentifier">Benutzername*</label>
+            <label htmlFor="adminIdentifier">{t('adminLogin.identifierLabel')}</label>
             <div className={`login-input${errors.identifier ? ' login-input--error' : ''}`}>
               <UserRound size={20} />
               <input
                 id="adminIdentifier"
                 type="text"
                 value={identifier}
-                placeholder="Benutzername oder E-Mail"
+                placeholder={t('adminLogin.identifierPlaceholder')}
                 autoComplete="username"
                 onChange={(event) => clearIdentifierError(event.target.value)}
               />
@@ -122,21 +165,21 @@ function AdminLogin() {
           </div>
 
           <div className="login-field">
-            <label htmlFor="adminPassword">Passwort*</label>
+            <label htmlFor="adminPassword">{t('adminLogin.passwordInputLabel')}</label>
             <div className={`login-input${errors.password ? ' login-input--error' : ''}`}>
               <LockKeyhole size={20} />
               <input
                 id="adminPassword"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                placeholder="Passwort"
+                placeholder={t('adminLogin.passwordPlaceholder')}
                 autoComplete="current-password"
                 onChange={(event) => clearPasswordError(event.target.value)}
               />
               <button
                 type="button"
                 className="password-toggle"
-                aria-label={showPassword ? 'Passwort ausblenden' : 'Passwort anzeigen'}
+                aria-label={showPassword ? t('adminLogin.hidePassword') : t('adminLogin.showPassword')}
                 onClick={() => setShowPassword((current) => !current)}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -147,7 +190,7 @@ function AdminLogin() {
 
           <button type="submit" className="login-submit" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="spin-icon" size={20} /> : <LogIn size={20} />}
-            {isSubmitting ? 'Wird angemeldet...' : 'Einloggen'}
+            {isSubmitting ? t('adminLogin.submitting') : t('adminLogin.submit')}
           </button>
         </form>
       </section>

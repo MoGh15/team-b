@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import UserManagement from './pages/UserManagement'
 import PatientForm from './pages/PatientForm'
 import AppointmentBooking from './pages/AppointmentBooking'
@@ -9,6 +10,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import DoctorDashboard from './pages/DoctorDashboard'
 import SubmissionDetails from './pages/SubmissionDetails'
 import CookieConsent from './components/CookieConsent'
+import LanguageSwitcher from './components/LanguageSwitcher'
 import './App.css'
 
 function getStoredUser() {
@@ -44,13 +46,16 @@ function ProtectedRoute({ children, roles }) {
 }
 
 function App() {
+  const { t } = useTranslation()
+
   return (
     <BrowserRouter>
       <div className="app-container">
         <nav className="app-nav">
-          <Link to="/">Patient Form</Link>
-          <Link to="/appointments/new">Book Appointment</Link>
-          <Link to="/appointments">Appointments</Link>
+          <Link to="/">{t('navigation.patientForm')}</Link>
+          <Link to="/appointments/new">{t('navigation.bookAppointment')}</Link>
+          <Link to="/appointments">{t('navigation.appointments')}</Link>
+          <LanguageSwitcher variant="plain" />
         </nav>
         <Routes>
           <Route path="/" element={<PatientForm />} />

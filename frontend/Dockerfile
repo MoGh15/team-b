@@ -28,10 +28,9 @@ RUN npm install -g serve
 
 # Copy built app from builder stage
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/serve.json ./dist/serve.json
 
 # Expose port
 EXPOSE 3000
 
 # Start the app
-CMD ["serve", "-s", "dist", "-l", "3000", "-c", "serve.json", "--no-etag"]
+CMD ["serve", "-s", "dist", "-l", "3000"]

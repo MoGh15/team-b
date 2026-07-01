@@ -3,10 +3,13 @@ const PatientForm = require('../models/PatientForm');
 const User = require('../models/User');
 
 const allowedStatuses = ['NEW', 'VIEWED', 'DONE'];
+const allowedLanguages = ['de', 'en', 'ar'];
 const doctorPopulate = {
   path: 'doctorId',
   select: 'fullName name email specialization isActive status role'
 };
+
+const normalizeLanguage = (language) => (allowedLanguages.includes(language) ? language : 'de');
 
 const normalizeList = (items) => {
   if (!Array.isArray(items)) {
@@ -55,6 +58,7 @@ exports.createPatientForm = async (req, res) => {
       medications,
       documents,
       doctorId,
+      language,
       signatureCaptured,
       signatureDataUrl
     } = req.body;
@@ -101,6 +105,7 @@ exports.createPatientForm = async (req, res) => {
     }
 
     const form = await PatientForm.create({
+      language: normalizeLanguage(language),
       patient,
       symptoms: normalizeList(symptoms),
       allergies: normalizeList(allergies),

@@ -20,7 +20,6 @@ import {
 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { patientFormApi } from '../api/patientFormApi'
-import LanguageSwitcher from '../components/LanguageSwitcher'
 import {
   formatDate,
   formatDateTime,
@@ -244,7 +243,6 @@ function SubmissionDetails() {
           <ArrowLeft size={18} />
           {t('submissionDetails.title')}
         </button>
-        <LanguageSwitcher />
         {form && <StatusPill status={status} />}
       </header>
 

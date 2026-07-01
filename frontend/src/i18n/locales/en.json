@@ -35,6 +35,36 @@
     "activate": "Activate",
     "deactivate": "Deactivate"
   },
+  "navigation": {
+    "patientForm": "Patient Form",
+    "bookAppointment": "Book Appointment",
+    "appointments": "Appointments"
+  },
+  "adminLogin": {
+    "title": "Admin / Doctor Login",
+    "subtitle": "Sign in to continue",
+    "helpTitle": "How to use this page",
+    "helpText": "You can sign in as the system admin to manage patient forms, doctors, users, and appointments. Doctors can sign in with their own account to review assigned patients and add consultation notes.",
+    "adminCredentialsTitle": "Default admin credentials",
+    "useAdminCredentials": "Use admin credentials",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "adminRoleTitle": "Admin:",
+    "adminRoleText": " manages the system and creates doctor accounts.",
+    "doctorRoleTitle": "Doctor:",
+    "doctorRoleText": " reviews assigned patients and records the medical consultation.",
+    "identifierLabel": "Username or email*",
+    "identifierPlaceholder": "Username or email",
+    "passwordInputLabel": "Password*",
+    "passwordPlaceholder": "Password",
+    "identifierRequired": "Username or email is required.",
+    "passwordRequired": "Password is required.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submitting": "Signing in...",
+    "submit": "Sign in",
+    "loginError": "Login failed. Check admin@example.com / admin123 or start the backend."
+  },
   "patient": {
     "title": "Patient",
     "subtitle": "Personal data and contact information",
@@ -92,6 +122,50 @@
     "noDoctorsAvailable": "No active doctors available",
     "doctorsLoadError": "Active doctors could not be loaded.",
     "doctorLoadError": "Doctors could not be loaded."
+  },
+  "appointments": {
+    "title": "Appointments",
+    "subtitle": "Review booked appointments and cancel any scheduled visit.",
+    "newAppointment": "New Appointment",
+    "loading": "Loading appointments...",
+    "empty": "No appointments found.",
+    "bookFirst": "Book your first appointment",
+    "date": "Date",
+    "time": "Time",
+    "statusLabel": "Status",
+    "notes": "Notes",
+    "patient": "Patient",
+    "cancelAppointment": "Cancel Appointment",
+    "cancelling": "Cancelling...",
+    "loadError": "Unable to load appointments.",
+    "cancelError": "Failed to cancel appointment.",
+    "status": {
+      "scheduled": "Scheduled",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    }
+  },
+  "appointmentBooking": {
+    "viewAppointments": "View Appointments",
+    "patientName": "Patient name",
+    "patientNamePlaceholder": "Enter the patient name for the booking",
+    "patientNameRequired": "Patient name is required to book the appointment.",
+    "date": "Appointment date",
+    "availableSlots": "Available Time Slots",
+    "loadingSlots": "Loading slots...",
+    "loadSlotsError": "Unable to load available time slots.",
+    "timeRequired": "Please select an available time slot.",
+    "success": "Appointment booked successfully.",
+    "bookError": "Failed to book appointment.",
+    "booked": "Booked",
+    "bookedWithPatient": "Booked - {{patient}}",
+    "available": "Available",
+    "noSlots": "No appointments are available for this date.",
+    "loading": "Loading...",
+    "notes": "Notes",
+    "notesPlaceholder": "Add any notes for the appointment",
+    "submit": "Book Appointment",
+    "submitting": "Booking..."
   },
   "medical": {
     "symptoms": {

@@ -19,6 +19,22 @@
   box-shadow: 0 22px 58px rgba(0, 0, 0, 0.22);
 }
 
+.login-language {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+}
+
+[dir='rtl'] .login-language {
+  right: auto;
+  left: 18px;
+}
+
+[dir='rtl'] .login-heading {
+  padding-right: 0;
+  padding-left: 42px;
+}
+
 .language-button {
   position: absolute;
   top: 18px;
@@ -70,6 +86,107 @@
   color: #7a7f8c;
   font-size: 22px;
   font-weight: 700;
+}
+
+.login-help {
+  display: grid;
+  gap: 14px;
+  margin: -8px 0 24px;
+  padding: 18px;
+  border: 1px solid #dfe4f2;
+  border-radius: 8px;
+  background: #f8faff;
+  color: #273044;
+}
+
+.login-help h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.login-help p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.55;
+}
+
+.login-credentials {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #cbd5ee;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.login-credentials__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.login-credentials__header strong {
+  color: #172554;
+}
+
+.login-credentials__header button {
+  min-height: 34px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #26358f;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  transform: none;
+}
+
+.login-credentials__header button:hover {
+  background: #1f2b78;
+  opacity: 1;
+  transform: none;
+}
+
+.login-credentials dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.login-credentials dl div {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.login-credentials dt {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.login-credentials dd {
+  margin: 0;
+  color: #111827;
+  font-family: Consolas, Monaco, monospace;
+  font-size: 15px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.login-role-notes {
+  display: grid;
+  gap: 8px;
+}
+
+.login-role-notes strong {
+  display: inline-block;
+  margin-inline-end: 6px;
+  color: #172554;
 }
 
 .login-error {
@@ -206,13 +323,33 @@
     padding: 26px 20px 24px;
   }
 
+  .login-language {
+    position: static;
+    margin-bottom: 18px;
+  }
+
   .login-heading {
     align-items: flex-start;
     flex-direction: column;
+    padding-right: 0;
+  }
+
+  [dir='rtl'] .login-heading {
+    padding-left: 0;
   }
 
   .login-heading p {
     font-size: 19px;
+  }
+
+  .login-credentials__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .login-credentials dl div {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 
   .login-input {

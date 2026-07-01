@@ -51,10 +51,29 @@
 }
 
 .appointment-form label {
-  display: grid;
-  gap: 8px;
-  font-weight: 600;
-  color: #2b2f45;
+   display: grid;
+   gap: 8px;
+   font-weight: 600;
+   color: #2b2f45;
+}
+
+.appointment-info-display {
+   display: grid;
+   gap: 8px;
+}
+
+.appointment-info-display label {
+   font-weight: 600;
+   color: #2b2f45;
+}
+
+.patient-info-value {
+   padding: 12px 14px;
+   border-radius: 12px;
+   background: #f0f2f8;
+   color: #1f2430;
+   font-size: 1rem;
+   border: 1px solid #e6e8f0;
 }
 
 .appointment-form input,
@@ -185,8 +204,21 @@
   cursor: not-allowed;
 }
 
+.slot-state {
+  font-size: 0.85rem;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
 .no-slots-text {
   color: #6b7280;
+}
+
+.no-slots-detail {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #7a7a7a;
+  white-space: pre-wrap;
 }
 
 .appointment-message {
@@ -220,6 +252,23 @@
 .appointment-submit:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+
+.slot-state {
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+/* محجوز */
+.slot-booked {
+  color: #e74c3c; /* أحمر */
+
+}
+
+/* متاح */
+.slot-available {
+  color: #2ecc71; /* أخضر */
 }
 
 @media (max-width: 680px) {
