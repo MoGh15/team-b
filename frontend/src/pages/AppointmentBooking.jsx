@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import appointmentApi from '../api/appointmentApi';
+import { normalizeLanguage } from '../i18n';
 import './AppointmentBooking.css';
 
 const getTodayDateString = () => {
@@ -11,10 +13,31 @@ const getTodayDateString = () => {
   return `${year}-${month}-${day}`;
 };
 
+const readPendingAppointmentContext = () => {
+  try {
+    return JSON.parse(sessionStorage.getItem('pendingAppointmentContext') || 'null') || {};
+  } catch (error) {
+    return {};
+  }
+};
+
+const isMongoObjectId = (value) => /^[a-f\d]{24}$/i.test(value || '');
+
 function AppointmentBooking() {
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const initialPatientName = location.state?.patientName || new URLSearchParams(location.search).get('patientName') || '';
+  const searchParams = new URLSearchParams(location.search);
+  const pendingContext = readPendingAppointmentContext();
+  const initialPatientFormId =
+    location.state?.patientFormId ||
+    searchParams.get('patientFormId') ||
+    pendingContext.patientFormId ||
+    localStorage.getItem('patientFormId') ||
+    '';
+  const initialLanguage = location.state?.language || searchParams.get('lng') || pendingContext.language || '';
+  const initialPatientName = location.state?.patientName || searchParams.get('patientName') || pendingContext.patientName || '';
+  const [patientFormId] = useState(initialPatientFormId);
   const [patientName, setPatientName] = useState(initialPatientName);
   const [appointmentDate, setAppointmentDate] = useState(getTodayDateString());
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -41,6 +64,15 @@ function AppointmentBooking() {
     '13:00'
   ];
 
+  useEffect(() => {
+    if (!initialLanguage) return;
+
+    const nextLanguage = normalizeLanguage(initialLanguage);
+    if (nextLanguage !== i18n.resolvedLanguage) {
+      i18n.changeLanguage(nextLanguage);
+    }
+  }, [initialLanguage, i18n]);
+
   const fetchAvailableSlots = async (date) => {
     if (!date) {
       setAvailableSlots([]);
@@ -54,14 +86,12 @@ function AppointmentBooking() {
       console.debug('availability response', response?.data);
       let data = response.data?.data || [];
 
-      // If backend returns array of strings (previous implementation), convert to objects
       if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'string') {
-        data = data.map((t) => ({ time: t, booked: false, patientName: null }));
+        data = data.map((time) => ({ time, booked: false, patientName: null }));
       }
 
-      // If backend returned empty array, generate default slots from workingHours
       if (!Array.isArray(data) || data.length === 0) {
-        data = workingHours.map((t) => ({ time: t, booked: false, patientName: null }));
+        data = workingHours.map((time) => ({ time, booked: false, patientName: null }));
       }
 
       setAvailableSlots(data);
@@ -70,10 +100,9 @@ function AppointmentBooking() {
       console.error('availability error', error);
       setMessage({
         type: 'error',
-        text: error.response?.data?.message || 'Unable to load available time slots.'
+        text: error.response?.data?.message || t('appointmentBooking.loadSlotsError')
       });
-      // fallback to default working hours on error
-      setAvailableSlots(workingHours.map((t) => ({ time: t, booked: false, patientName: null })));
+      setAvailableSlots(workingHours.map((time) => ({ time, booked: false, patientName: null })));
     } finally {
       setLoading(false);
     }
@@ -81,7 +110,6 @@ function AppointmentBooking() {
 
   useEffect(() => {
     fetchAvailableSlots(appointmentDate);
-    // If navigated with state or query param, keep patientName in sync
     const fromState = location.state?.patientName;
     const fromQuery = new URLSearchParams(location.search).get('patientName');
     if (fromState && fromState !== patientName) setPatientName(fromState);
@@ -89,53 +117,49 @@ function AppointmentBooking() {
   }, [appointmentDate]);
 
   useEffect(() => {
-    // prepare next 7 days
-    const nextDays = Array.from({ length: 7 }).map((_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() + i);
-      const iso = d.toISOString().slice(0, 10);
-      const weekday = d.toLocaleDateString(undefined, { weekday: 'short' });
+    const locale = i18n.resolvedLanguage || i18n.language;
+    const nextDays = Array.from({ length: 7 }).map((_, index) => {
+      const date = new Date();
+      date.setDate(date.getDate() + index);
+      const iso = date.toISOString().slice(0, 10);
+      const weekday = new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(date);
       return { iso, display: `${weekday} ${iso}` };
     });
-    // exclude Fridays
-    const filtered = nextDays.filter((x) => new Date(x.iso).getDay() !== 5);
+    const filtered = nextDays.filter((day) => new Date(day.iso).getDay() !== 5);
     setDays(filtered);
-    // select first day by default
-    setSelectedDayIndex(0);
-    if (filtered[0]) setAppointmentDate(filtered[0].iso);
-  }, []);
+    const selectedIndex = filtered.findIndex((day) => day.iso === appointmentDate);
+    setSelectedDayIndex(selectedIndex >= 0 ? selectedIndex : 0);
+  }, [i18n.resolvedLanguage, i18n.language]);
 
-  // helper to fetch slots for a single date (shared by single-day and week fetches)
   const fetchSlots = async (date) => {
     try {
       const response = await appointmentApi.getAvailability(date);
       let data = response.data?.data || [];
 
       if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'string') {
-        data = data.map((t) => ({ time: t, booked: false, patientName: null }));
+        data = data.map((time) => ({ time, booked: false, patientName: null }));
       }
 
       if (!Array.isArray(data) || data.length === 0) {
-        data = workingHours.map((t) => ({ time: t, booked: false, patientName: null }));
+        data = workingHours.map((time) => ({ time, booked: false, patientName: null }));
       }
 
       return data;
     } catch (error) {
-      return workingHours.map((t) => ({ time: t, booked: false, patientName: null }));
+      return workingHours.map((time) => ({ time, booked: false, patientName: null }));
     }
   };
 
-  // fetch availability for the whole week (for the weekly boxes view)
   useEffect(() => {
     if (!days || days.length === 0) return;
     let mounted = true;
     const loadWeek = async () => {
-      const promises = days.map((d) => fetchSlots(d.iso));
+      const promises = days.map((day) => fetchSlots(day.iso));
       const results = await Promise.all(promises);
       if (!mounted) return;
       const map = {};
-      days.forEach((d, i) => {
-        map[d.iso] = results[i];
+      days.forEach((day, index) => {
+        map[day.iso] = results[index];
       });
       setWeekAvailability(map);
     };
@@ -149,35 +173,44 @@ function AppointmentBooking() {
     event.preventDefault();
     setMessage({ type: '', text: '' });
 
-    if (!patientName.trim()) {
-      setMessage({ type: 'error', text: 'الاسم مطلوب لحجز الموعد.' });
+    const canLinkRemoteForm = isMongoObjectId(patientFormId);
+    if (!canLinkRemoteForm && !patientName.trim()) {
+      setMessage({ type: 'error', text: t('appointmentBooking.patientNameRequired') });
       return;
     }
 
     if (!selectedTime) {
-      setMessage({ type: 'error', text: 'Please select an available time slot.' });
+      setMessage({ type: 'error', text: t('appointmentBooking.timeRequired') });
       return;
     }
 
     try {
       setSubmitLoading(true);
-      await appointmentApi.create({
-        patientName: patientName.trim(),
+      const appointmentPayload = {
         appointmentDate,
         appointmentTime: selectedTime,
-        notes: notes.trim()
-      });
+        notes: notes.trim(),
+        language: normalizeLanguage(i18n.resolvedLanguage || i18n.language),
+      };
 
-      setMessage({ type: 'success', text: 'تم حجز الموعد بنجاح.' });
+      if (canLinkRemoteForm) {
+        appointmentPayload.patientFormId = patientFormId;
+      } else {
+        appointmentPayload.patientName = patientName.trim();
+      }
+
+      await appointmentApi.create(appointmentPayload);
+
+      setMessage({ type: 'success', text: t('appointmentBooking.success') });
       setSelectedTime('');
       setNotes('');
+      sessionStorage.removeItem('pendingAppointmentContext');
       fetchAvailableSlots(appointmentDate);
-      // انتقل لصفحة المواعيد بعد الحجز
       navigate('/appointments');
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error.response?.data?.message || 'Failed to book appointment.'
+        text: error.response?.data?.message || t('appointmentBooking.bookError')
       });
     } finally {
       setSubmitLoading(false);
@@ -186,27 +219,26 @@ function AppointmentBooking() {
 
   return (
     <div className="appointment-page">
-      {/* keep only the View Appointments link at the top */}
       <div className="appointment-header">
         <div />
         <Link className="appointment-link" to="/appointments">
-          View Appointments
+          {t('appointmentBooking.viewAppointments')}
         </Link>
       </div>
 
       <form className="appointment-form" onSubmit={handleSubmit}>
         <label>
-          اسم المريض
+          {t('appointmentBooking.patientName')}
           <input
             type="text"
             value={patientName}
             onChange={(event) => setPatientName(event.target.value)}
-            placeholder="أدخل اسم المريض للحجز"
+            placeholder={t('appointmentBooking.patientNamePlaceholder')}
           />
         </label>
 
         <label>
-          Appointment Date
+          {t('appointmentBooking.date')}
           <input
             type="date"
             value={appointmentDate}
@@ -220,8 +252,8 @@ function AppointmentBooking() {
 
         <div className="appointment-slots">
           <div className="appointment-slots-header">
-            <h2>Available Time Slots</h2>
-            {loading && <span className="slot-loading">Loading slots…</span>}
+            <h2>{t('appointmentBooking.availableSlots')}</h2>
+            {loading && <span className="slot-loading">{t('appointmentBooking.loadingSlots')}</span>}
           </div>
 
           {availableSlots.length > 0 ? (
@@ -235,28 +267,32 @@ function AppointmentBooking() {
                   disabled={slot.booked}
                 >
                   <div>{slot.time}</div>
-                  <div style={{ fontSize: '0.85rem', marginTop: 6 }}>
-                    {slot.booked ? `محجوز${slot.patientName ? ` - ${slot.patientName}` : ''}` : 'غير محجوز'}
+                  <div className="slot-state">
+                    {slot.booked
+                      ? slot.patientName
+                        ? t('appointmentBooking.bookedWithPatient', { patient: slot.patientName })
+                        : t('appointmentBooking.booked')
+                      : t('appointmentBooking.available')}
                   </div>
                 </button>
               ))}
             </div>
           ) : (
             <div className="no-slots-text">
-              لا توجد مواعيد متاحة لهذا التاريخ.
-              <div style={{ marginTop: 8, fontSize: 12, color: '#7a7a7a' }}>
-                {loading ? 'جارٍ التحميل...' : <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(availableSlots, null, 2)}</pre>}
+              {t('appointmentBooking.noSlots')}
+              <div className="no-slots-detail">
+                {loading ? t('appointmentBooking.loading') : JSON.stringify(availableSlots, null, 2)}
               </div>
             </div>
           )}
         </div>
 
         <label>
-          Notes
+          {t('appointmentBooking.notes')}
           <textarea
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
-            placeholder="Add any notes for the appointment"
+            placeholder={t('appointmentBooking.notesPlaceholder')}
           />
         </label>
 
@@ -265,7 +301,7 @@ function AppointmentBooking() {
         )}
 
         <button className="appointment-submit" type="submit" disabled={submitLoading}>
-          {submitLoading ? 'Booking…' : 'Book Appointment'}
+          {submitLoading ? t('appointmentBooking.submitting') : t('appointmentBooking.submit')}
         </button>
       </form>
     </div>

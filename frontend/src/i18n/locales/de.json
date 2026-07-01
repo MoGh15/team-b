@@ -35,6 +35,36 @@
     "activate": "Aktivieren",
     "deactivate": "Deaktivieren"
   },
+  "navigation": {
+    "patientForm": "Patientenformular",
+    "bookAppointment": "Termin buchen",
+    "appointments": "Termine"
+  },
+  "adminLogin": {
+    "title": "Admin / Arzt Login",
+    "subtitle": "Bitte anmelden, um fortzufahren",
+    "helpTitle": "So nutzt du diese Seite",
+    "helpText": "Du kannst dich als Systemadmin anmelden, um Patientenformulare, Aerzte, Benutzer und Termine zu verwalten. Aerzte melden sich mit ihrem eigenen Konto an, um zugewiesene Patienten zu pruefen und Notizen zur Untersuchung zu speichern.",
+    "adminCredentialsTitle": "Standarddaten fuer den Admin",
+    "useAdminCredentials": "Admin-Daten verwenden",
+    "emailLabel": "E-Mail",
+    "passwordLabel": "Passwort",
+    "adminRoleTitle": "Admin:",
+    "adminRoleText": " verwaltet das System und erstellt Arztkonten.",
+    "doctorRoleTitle": "Arzt:",
+    "doctorRoleText": " prueft zugewiesene Patienten und dokumentiert die medizinische Untersuchung.",
+    "identifierLabel": "Benutzername oder E-Mail*",
+    "identifierPlaceholder": "Benutzername oder E-Mail",
+    "passwordInputLabel": "Passwort*",
+    "passwordPlaceholder": "Passwort",
+    "identifierRequired": "Benutzername oder E-Mail ist erforderlich.",
+    "passwordRequired": "Passwort ist erforderlich.",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort ausblenden",
+    "submitting": "Wird angemeldet...",
+    "submit": "Einloggen",
+    "loginError": "Anmeldung fehlgeschlagen. Bitte admin@example.com / admin123 pruefen oder Backend starten."
+  },
   "patient": {
     "title": "Patient",
     "subtitle": "Persoenliche Daten und Kontaktinformationen",
@@ -92,6 +122,50 @@
     "noDoctorsAvailable": "Keine aktiven Aerzte verfuegbar",
     "doctorsLoadError": "Aktive Aerzte konnten nicht geladen werden.",
     "doctorLoadError": "Aerzte konnten nicht geladen werden."
+  },
+  "appointments": {
+    "title": "Termine",
+    "subtitle": "Gebuchte Termine pruefen und geplante Besuche stornieren.",
+    "newAppointment": "Neuer Termin",
+    "loading": "Termine werden geladen...",
+    "empty": "Keine Termine gefunden.",
+    "bookFirst": "Ersten Termin buchen",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "statusLabel": "Status",
+    "notes": "Notizen",
+    "patient": "Patient",
+    "cancelAppointment": "Termin stornieren",
+    "cancelling": "Wird storniert...",
+    "loadError": "Termine konnten nicht geladen werden.",
+    "cancelError": "Termin konnte nicht storniert werden.",
+    "status": {
+      "scheduled": "Geplant",
+      "cancelled": "Storniert",
+      "completed": "Abgeschlossen"
+    }
+  },
+  "appointmentBooking": {
+    "viewAppointments": "Termine anzeigen",
+    "patientName": "Patientenname",
+    "patientNamePlaceholder": "Patientennamen fuer die Buchung eingeben",
+    "patientNameRequired": "Patientenname ist fuer die Terminbuchung erforderlich.",
+    "date": "Termindatum",
+    "availableSlots": "Verfuegbare Uhrzeiten",
+    "loadingSlots": "Uhrzeiten werden geladen...",
+    "loadSlotsError": "Verfuegbare Uhrzeiten konnten nicht geladen werden.",
+    "timeRequired": "Bitte waehlen Sie eine verfuegbare Uhrzeit aus.",
+    "success": "Termin wurde erfolgreich gebucht.",
+    "bookError": "Termin konnte nicht gebucht werden.",
+    "booked": "Gebucht",
+    "bookedWithPatient": "Gebucht - {{patient}}",
+    "available": "Frei",
+    "noSlots": "Fuer dieses Datum sind keine Termine verfuegbar.",
+    "loading": "Wird geladen...",
+    "notes": "Notizen",
+    "notesPlaceholder": "Notizen zum Termin hinzufuegen",
+    "submit": "Termin buchen",
+    "submitting": "Wird gebucht..."
   },
   "medical": {
     "symptoms": {

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import appointmentApi from '../api/appointmentApi';
 import './Appointments.css';
 
 function Appointments() {
+  const { t, i18n } = useTranslation();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -16,7 +18,7 @@ function Appointments() {
       const response = await appointmentApi.getAll();
       setAppointments(response.data?.data || []);
     } catch (requestError) {
-      setError(requestError.response?.data?.message || 'Unable to load appointments.');
+      setError(requestError.response?.data?.message || t('appointments.loadError'));
       setAppointments([]);
     } finally {
       setLoading(false);
@@ -37,7 +39,7 @@ function Appointments() {
         )
       );
     } catch (requestError) {
-      setError(requestError.response?.data?.message || 'Failed to cancel appointment.');
+      setError(requestError.response?.data?.message || t('appointments.cancelError'));
     } finally {
       setActionLoading('');
     }
@@ -46,30 +48,35 @@ function Appointments() {
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
-    return date.toLocaleDateString();
+    return new Intl.DateTimeFormat(i18n.resolvedLanguage || i18n.language).format(date);
+  };
+
+  const getStatusLabel = (status) => {
+    const normalizedStatus = String(status || '').toLowerCase();
+    return t(`appointments.status.${normalizedStatus}`, { defaultValue: status || '-' });
   };
 
   return (
     <div className="appointments-page">
       <div className="appointments-header">
         <div>
-          <h1>Appointments</h1>
-          <p>Review booked appointments and cancel any scheduled visit.</p>
+          <h1>{t('appointments.title')}</h1>
+          <p>{t('appointments.subtitle')}</p>
         </div>
         <Link className="appointments-link" to="/appointments/new">
-          New Appointment
+          {t('appointments.newAppointment')}
         </Link>
       </div>
 
       {loading ? (
-        <p className="appointments-empty">Loading appointments…</p>
+        <p className="appointments-empty">{t('appointments.loading')}</p>
       ) : error ? (
         <p className="appointments-error">{error}</p>
       ) : appointments.length === 0 ? (
         <div className="appointments-empty">
-          <p>No appointments found.</p>
+          <p>{t('appointments.empty')}</p>
           <Link className="appointments-action-link" to="/appointments/new">
-            Book your first appointment
+            {t('appointments.bookFirst')}
           </Link>
         </div>
       ) : (
@@ -77,12 +84,12 @@ function Appointments() {
           <table className="appointments-table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th>Notes</th>
-                <th>Patient</th>
-                <th>Action</th>
+                <th>{t('appointments.date')}</th>
+                <th>{t('appointments.time')}</th>
+                <th>{t('appointments.statusLabel')}</th>
+                <th>{t('appointments.notes')}</th>
+                <th>{t('appointments.patient')}</th>
+                <th>{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -90,9 +97,13 @@ function Appointments() {
                 <tr key={appointment._id}>
                   <td>{formatDate(appointment.appointmentDate)}</td>
                   <td>{appointment.appointmentTime}</td>
-                  <td>{appointment.status}</td>
+                  <td>{getStatusLabel(appointment.status)}</td>
                   <td>{appointment.notes || '-'}</td>
-                  <td>{appointment.patientFormId?.patient?.firstName ? `${appointment.patientFormId.patient.firstName} ${appointment.patientFormId.patient.lastName}` : '-'}</td>
+                  <td>
+                    {appointment.patientFormId?.patient?.firstName
+                      ? `${appointment.patientFormId.patient.firstName} ${appointment.patientFormId.patient.lastName}`
+                      : '-'}
+                  </td>
                   <td>
                     {appointment.status === 'SCHEDULED' ? (
                       <button
@@ -101,10 +112,12 @@ function Appointments() {
                         disabled={actionLoading === appointment._id}
                         onClick={() => handleCancel(appointment._id)}
                       >
-                        {actionLoading === appointment._id ? 'Cancelling…' : 'Cancel Appointment'}
+                        {actionLoading === appointment._id
+                          ? t('appointments.cancelling')
+                          : t('appointments.cancelAppointment')}
                       </button>
                     ) : (
-                      <span className="appointments-status-text">—</span>
+                      <span className="appointments-status-text">-</span>
                     )}
                   </td>
                 </tr>

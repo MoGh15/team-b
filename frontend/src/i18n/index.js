@@ -4,12 +4,14 @@ import de from './locales/de.json'
 import en from './locales/en.json'
 import ar from './locales/ar.json'
 
-const supportedLanguages = ['de', 'en', 'ar']
+export const supportedLanguages = ['de', 'en', 'ar']
+export const normalizeLanguage = (language) => (supportedLanguages.includes(language) ? language : 'de')
+
 const savedLanguage = localStorage.getItem('app_language')
-const initialLanguage = supportedLanguages.includes(savedLanguage) ? savedLanguage : 'de'
+const initialLanguage = normalizeLanguage(savedLanguage)
 
 const applyDocumentLanguage = (language) => {
-  const normalizedLanguage = supportedLanguages.includes(language) ? language : 'de'
+  const normalizedLanguage = normalizeLanguage(language)
   document.documentElement.lang = normalizedLanguage
   document.documentElement.dir = normalizedLanguage === 'ar' ? 'rtl' : 'ltr'
 }
@@ -30,7 +32,7 @@ i18n.use(initReactI18next).init({
 applyDocumentLanguage(initialLanguage)
 
 i18n.on('languageChanged', (language) => {
-  const normalizedLanguage = supportedLanguages.includes(language) ? language : 'de'
+  const normalizedLanguage = normalizeLanguage(language)
   localStorage.setItem('app_language', normalizedLanguage)
   applyDocumentLanguage(normalizedLanguage)
 })

@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const patientFormSchema = new mongoose.Schema(
   {
+    language: {
+      type: String,
+      enum: ['de', 'en', 'ar'],
+      default: 'de'
+    },
     patient: {
       firstName: {
         type: String,

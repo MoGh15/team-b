@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const appointmentSchema = new mongoose.Schema(
   {
+    language: {
+      type: String,
+      enum: ['de', 'en', 'ar'],
+      default: 'de'
+    },
     patientFormId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'PatientForm'

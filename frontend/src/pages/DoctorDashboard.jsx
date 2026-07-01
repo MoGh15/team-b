@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { Eye, Loader2, LogOut, RefreshCcw, Search, Stethoscope } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { patientFormApi } from '../api/patientFormApi'
-import LanguageSwitcher from '../components/LanguageSwitcher'
 import {
   formatDate,
   formatDateTime,
@@ -86,7 +85,6 @@ function DoctorDashboard() {
           </p>
         </div>
         <div className="admin-topbar__actions">
-          <LanguageSwitcher />
           <button type="button" className="admin-action admin-action--light" onClick={fetchForms}>
             <RefreshCcw size={18} />
             {t('common.refresh')}

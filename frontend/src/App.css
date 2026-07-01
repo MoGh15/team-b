@@ -23,6 +23,10 @@
   text-decoration: underline;
 }
 
+.app-nav .language-switcher {
+  margin-inline-start: 8px;
+}
+
 .loading-state,
 .error-state {
   display: flex;

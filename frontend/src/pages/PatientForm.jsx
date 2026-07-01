@@ -27,7 +27,6 @@ import {
 } from 'lucide-react'
 import { doctorApi } from '../api/doctorApi'
 import { patientFormApi } from '../api/patientFormApi'
-import LanguageSwitcher from '../components/LanguageSwitcher'
 import './PatientForm.css'
 
 const initialPatient = {
@@ -92,7 +91,7 @@ const getTodayDateString = () => {
 }
 
 function PatientForm() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [patient, setPatient] = useState(initialPatient)
   const [selectedSymptoms, setSelectedSymptoms] = useState([])
   const [customSymptoms, setCustomSymptoms] = useState([])
@@ -497,7 +496,9 @@ function PatientForm() {
     }
 
     const selectedDoctor = doctors.find((doctor) => doctor._id === selectedDoctorId)
+    const currentLanguage = i18n.resolvedLanguage || i18n.language
     const payload = {
+      language: currentLanguage,
       patient,
       doctorId: selectedDoctorId,
       doctorName: selectedDoctor?.fullName || selectedDoctor?.name || '',
@@ -526,9 +527,21 @@ function PatientForm() {
         localStorage.setItem('patientFormId', returnedId)
       }
       
-      // Redirect to appointment booking with the created form id
+      // Redirect to appointment booking with the same form and language context.
       if (returnedId) {
-        navigate(`/appointments/new?patientFormId=${encodeURIComponent(returnedId)}`)
+        const patientName = `${patient.firstName} ${patient.lastName}`.trim()
+        const appointmentContext = {
+          patientFormId: returnedId,
+          patientName,
+          language: currentLanguage,
+        }
+        sessionStorage.setItem('pendingAppointmentContext', JSON.stringify(appointmentContext))
+
+        const query = new URLSearchParams({
+          patientFormId: returnedId,
+          lng: currentLanguage,
+        })
+        navigate(`/appointments/new?${query.toString()}`, { state: appointmentContext })
       }
       setStatusMessage({
         type: 'success',
@@ -578,7 +591,6 @@ function PatientForm() {
             <p>{t('patientForm.subtitle')}</p>
           </div>
           <div className="patient-form-header__actions">
-            <LanguageSwitcher variant="plain" />
             <button type="button" className="ghost-action" onClick={resetForm}>
               <RefreshCcw size={16} />
               {t('common.reset')}

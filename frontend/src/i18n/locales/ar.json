@@ -35,6 +35,36 @@
     "activate": "تفعيل",
     "deactivate": "تعطيل"
   },
+  "navigation": {
+    "patientForm": "نموذج المريض",
+    "bookAppointment": "حجز موعد",
+    "appointments": "المواعيد"
+  },
+  "adminLogin": {
+    "title": "دخول المدير / الطبيب",
+    "subtitle": "سجل الدخول للمتابعة",
+    "helpTitle": "شرح الاستخدام",
+    "helpText": "من هنا يمكنك الدخول كمدير للنظام لإدارة نماذج المرضى والأطباء والمستخدمين والمواعيد. ويمكن للطبيب الدخول بحسابه لمعاينة المرضى المعيّنين له وتسجيل ملاحظات المعاينة.",
+    "adminCredentialsTitle": "بيانات الأدمن الافتراضية",
+    "useAdminCredentials": "استخدام بيانات الأدمن",
+    "emailLabel": "الإيميل",
+    "passwordLabel": "كلمة المرور",
+    "adminRoleTitle": "مدير النظام:",
+    "adminRoleText": " يدير النظام وينشئ حسابات الأطباء.",
+    "doctorRoleTitle": "الطبيب:",
+    "doctorRoleText": " يدخل لمعاينة المرضى المعيّنين له وتسجيل الاستشارة الطبية.",
+    "identifierLabel": "اسم المستخدم أو الإيميل*",
+    "identifierPlaceholder": "اسم المستخدم أو الإيميل",
+    "passwordInputLabel": "كلمة المرور*",
+    "passwordPlaceholder": "كلمة المرور",
+    "identifierRequired": "اسم المستخدم أو الإيميل مطلوب.",
+    "passwordRequired": "كلمة المرور مطلوبة.",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور",
+    "submitting": "جاري تسجيل الدخول...",
+    "submit": "دخول",
+    "loginError": "فشل تسجيل الدخول. تحقق من admin@example.com / admin123 أو شغل الخلفية."
+  },
   "patient": {
     "title": "المريض",
     "subtitle": "البيانات الشخصية ومعلومات التواصل",
@@ -92,6 +122,50 @@
     "noDoctorsAvailable": "لا يوجد أطباء نشطون",
     "doctorsLoadError": "تعذر تحميل قائمة الأطباء.",
     "doctorLoadError": "تعذر تحميل قائمة الأطباء."
+  },
+  "appointments": {
+    "title": "المواعيد",
+    "subtitle": "راجع المواعيد المحجوزة وألغ أي زيارة مجدولة.",
+    "newAppointment": "موعد جديد",
+    "loading": "جاري تحميل المواعيد...",
+    "empty": "لا توجد مواعيد.",
+    "bookFirst": "احجز أول موعد",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "statusLabel": "الحالة",
+    "notes": "الملاحظات",
+    "patient": "المريض",
+    "cancelAppointment": "إلغاء الموعد",
+    "cancelling": "جاري الإلغاء...",
+    "loadError": "تعذر تحميل المواعيد.",
+    "cancelError": "تعذر إلغاء الموعد.",
+    "status": {
+      "scheduled": "مجدول",
+      "cancelled": "ملغي",
+      "completed": "مكتمل"
+    }
+  },
+  "appointmentBooking": {
+    "viewAppointments": "عرض المواعيد",
+    "patientName": "اسم المريض",
+    "patientNamePlaceholder": "أدخل اسم المريض للحجز",
+    "patientNameRequired": "اسم المريض مطلوب لحجز الموعد.",
+    "date": "تاريخ الموعد",
+    "availableSlots": "الأوقات المتاحة",
+    "loadingSlots": "جاري تحميل الأوقات...",
+    "loadSlotsError": "تعذر تحميل الأوقات المتاحة.",
+    "timeRequired": "يرجى اختيار وقت متاح.",
+    "success": "تم حجز الموعد بنجاح.",
+    "bookError": "تعذر حجز الموعد.",
+    "booked": "محجوز",
+    "bookedWithPatient": "محجوز - {{patient}}",
+    "available": "متاح",
+    "noSlots": "لا توجد مواعيد متاحة لهذا التاريخ.",
+    "loading": "جاري التحميل...",
+    "notes": "الملاحظات",
+    "notesPlaceholder": "أضف أي ملاحظات للموعد",
+    "submit": "حجز الموعد",
+    "submitting": "جاري الحجز..."
   },
   "medical": {
     "symptoms": {
