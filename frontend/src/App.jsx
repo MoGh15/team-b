@@ -1,6 +1,6 @@
-import React from 'react'
-import { BrowserRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import React, { useState, useEffect } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import Login from './components/Login'
 import UserManagement from './pages/UserManagement'
 import PatientForm from './pages/PatientForm'
 import AppointmentBooking from './pages/AppointmentBooking'
@@ -13,11 +13,67 @@ import CookieConsent from './components/CookieConsent'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import './App.css'
 
-function getStoredUser() {
-  try {
-    return JSON.parse(localStorage.getItem('authUser') || 'null')
-  } catch (error) {
-    return null
+function AdminDashboardPlaceholder() {
+  return (
+    <div className="admin-dashboard-placeholder">
+      <div>
+        <p>Admin Dashboard</p>
+        <h1>Dashboard kommt später</h1>
+      </div>
+    </div>
+  )
+}
+
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem('authToken')
+
+  if (!token) {
+    return <Navigate to="/login" replace />
+  }
+
+  return children
+}
+
+function LoginRoute() {
+  const token = localStorage.getItem('authToken')
+
+  if (token) {
+    return <Navigate to="/admin-dashboard" replace />
+  }
+
+  return <Login />
+}
+
+function App() {
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    // Check if backend is accessible
+    const checkBackend = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/health`)
+        if (!response.ok) {
+          throw new Error('Backend is not responding')
+        }
+        setIsLoading(false)
+      } catch (err) {
+        setError('Backend service is not available')
+        setIsLoading(false)
+      }
+    }
+
+    checkBackend()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="app-container">
+        <div className="loading-state">
+          <p>Loading...</p>
+        </div>
+      </div>
+    )
   }
 }
 
@@ -49,73 +105,29 @@ function App() {
   const { t } = useTranslation()
 
   return (
-    <BrowserRouter>
-      <div className="app-container">
-        <nav className="app-nav">
-          <Link to="/">{t('navigation.patientForm')}</Link>
-          <Link to="/appointments/new">{t('navigation.bookAppointment')}</Link>
-          <Link to="/appointments">{t('navigation.appointments')}</Link>
-          <LanguageSwitcher variant="plain" />
-        </nav>
-        <Routes>
-          <Route path="/" element={<PatientForm />} />
-          <Route path="/login" element={<AdminLogin />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <Navigate to="/admin/submissions" replace />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/submissions"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/submissions/:id"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <SubmissionDetails />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <UserManagement />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/doctor"
-            element={
-              <ProtectedRoute roles={['doctor']}>
-                <DoctorDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/doctor/submissions/:id"
-            element={
-              <ProtectedRoute roles={['doctor']}>
-                <SubmissionDetails />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/appointments/new" element={<AppointmentBooking />} />
-          <Route path="/appointments" element={<Appointments />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        <CookieConsent />
-      </div>
-    </BrowserRouter>
+    <div className="app-container">
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<LoginRoute />} />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboardPlaceholder />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <UserManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </div>
   )
 }
 

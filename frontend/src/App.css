@@ -56,3 +56,27 @@
   color: #666;
   font-size: 16px;
 }
+
+.admin-dashboard-placeholder {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.admin-dashboard-placeholder p {
+  margin-bottom: 8px;
+  color: #0f766e;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.admin-dashboard-placeholder h1 {
+  color: #0f172a;
+  font-size: 36px;
+  letter-spacing: 0;
+}
