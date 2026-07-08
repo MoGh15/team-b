@@ -20,6 +20,9 @@ COPY --from=builder /app/node_modules ./node_modules
 # Copy application code
 COPY . .
 
+# Install netcat for health/wait checks
+RUN apk add --no-cache netcat-openbsd
+
 # Expose port
 EXPOSE 3000
 
@@ -29,3 +32,26 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 # Start application
 CMD ["node", "server.js"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

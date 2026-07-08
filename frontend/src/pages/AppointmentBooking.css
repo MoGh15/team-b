@@ -1,0 +1,280 @@
+.appointment-page {
+  max-width: 920px;
+  margin: 32px auto;
+  padding: 0 16px 32px;
+}
+
+.appointment-header,
+.appointments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.appointment-header h1,
+.appointments-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.appointment-header p,
+.appointments-header p {
+  margin: 6px 0 0;
+  color: #454a64;
+  max-width: 540px;
+}
+
+.appointment-link,
+.appointments-link,
+.appointments-action-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #26358f;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.appointment-form {
+  display: grid;
+  gap: 18px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 16px 40px rgba(33, 41, 82, 0.08);
+}
+
+.appointment-form label {
+   display: grid;
+   gap: 8px;
+   font-weight: 600;
+   color: #2b2f45;
+}
+
+.appointment-info-display {
+   display: grid;
+   gap: 8px;
+}
+
+.appointment-info-display label {
+   font-weight: 600;
+   color: #2b2f45;
+}
+
+.patient-info-value {
+   padding: 12px 14px;
+   border-radius: 12px;
+   background: #f0f2f8;
+   color: #1f2430;
+   font-size: 1rem;
+   border: 1px solid #e6e8f0;
+}
+
+.appointment-form input,
+.appointment-form textarea {
+  border: 1px solid #d2d4e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  color: #1f2430;
+  background: #fdfdff;
+}
+
+.appointment-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.appointment-slots {
+  display: grid;
+  gap: 12px;
+}
+
+.appointment-slots-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.slot-loading {
+  color: #5b5f7c;
+  font-size: 0.95rem;
+}
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 8px 0 18px;
+}
+
+.day-box {
+  border: 1px solid #e6e8f0;
+  border-radius: 12px;
+  padding: 10px;
+  background: #ffffff;
+}
+
+.day-box.selected {
+  border-color: #26358f;
+  box-shadow: 0 6px 18px rgba(38,53,143,0.08);
+}
+
+.day-header {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #2b2f45;
+}
+
+.day-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+}
+
+.mini-slot {
+  border: 1px solid #d2d4e1;
+  border-radius: 8px;
+  padding: 8px;
+  background: #ffffff;
+  color: #1f2430;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.mini-slot .mini-slot-sub {
+  font-size: 0.75rem;
+  margin-top: 6px;
+  color: #6b7280;
+}
+
+.mini-slot.booked {
+  background: #fff5f5;
+  color: #6b1e1e;
+  border-color: #f1c0bf;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.mini-slot.selected {
+  background: #26358f;
+  color: #fff;
+  border-color: #26358f;
+}
+
+.slot-button {
+  border: 1px solid #d2d4e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1f2430;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.slot-button:hover {
+  border-color: #26358f;
+}
+
+.slot-button.selected {
+  background: #26358f;
+  border-color: #26358f;
+  color: #ffffff;
+}
+
+.slot-button.booked {
+  opacity: 0.7;
+  border-color: #d9534f;
+  color: #6b1e1e;
+  background: #fff5f5;
+  cursor: not-allowed;
+}
+
+.slot-state {
+  font-size: 0.85rem;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.no-slots-text {
+  color: #6b7280;
+}
+
+.no-slots-detail {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #7a7a7a;
+  white-space: pre-wrap;
+}
+
+.appointment-message {
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.appointment-message.success {
+  background: #def7ec;
+  color: #0f5132;
+}
+
+.appointment-message.error {
+  background: #f8d7da;
+  color: #842029;
+}
+
+.appointment-submit {
+  width: fit-content;
+  background: #26358f;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.appointment-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+
+.slot-state {
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+/* محجوز */
+.slot-booked {
+  color: #e74c3c; /* أحمر */
+
+}
+
+/* متاح */
+.slot-available {
+  color: #2ecc71; /* أخضر */
+}
+
+@media (max-width: 680px) {
+  .appointment-header,
+  .appointments-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,11 +1,13 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
+
 /**
  * Generate JWT Token
  */
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id }, JWT_SECRET, {
     expiresIn: '24h'
   });
 };
@@ -16,18 +18,24 @@ const generateToken = (id) => {
  */
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, username, identifier, password } = req.body;
+    const loginIdentifier = email || username || identifier;
 
     // Validation
-    if (!email || !password) {
+    if (!loginIdentifier || !password) {
       return res.status(400).json({
         status: 'error',
-        message: 'Please provide email and password'
+        message: 'Please provide username or email and password'
       });
     }
 
     // Check for user
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({
+      $or: [
+        { email: loginIdentifier.toLowerCase() },
+        { name: loginIdentifier }
+      ]
+    }).select('+password');
 
     if (!user) {
       return res.status(401).json({
@@ -46,6 +54,13 @@ exports.login = async (req, res) => {
       });
     }
 
+    if (user.status !== 'active' || user.isActive === false) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Account is inactive'
+      });
+    }
+
     // Create token
     const token = generateToken(user._id);
 
@@ -55,8 +70,12 @@ exports.login = async (req, res) => {
       token,
       user: {
         id: user._id,
+        name: user.name,
+        fullName: user.fullName || user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        specialization: user.specialization,
+        isActive: user.isActive !== false && user.status === 'active'
       }
     });
   } catch (error) {

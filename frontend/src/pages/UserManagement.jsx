@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import UserList from '../components/UserList'
 import UserForm from '../components/UserForm'
 import { userApi } from '../api/userApi'
@@ -11,6 +13,7 @@ function UserManagement() {
   const [showForm, setShowForm] = useState(false)
   const [editingUser, setEditingUser] = useState(null)
   const [successMessage, setSuccessMessage] = useState('')
+  const navigate = useNavigate()
 
   // Fetch users on component mount
   useEffect(() => {
@@ -79,6 +82,12 @@ function UserManagement() {
     setEditingUser(null)
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('authUser')
+    navigate('/admin/login', { replace: true })
+  }
+
   return (
     <div className="user-management">
       <header className="management-header">
@@ -86,13 +95,24 @@ function UserManagement() {
           <h1>User Management</h1>
           <p>Manage system users and their roles</p>
         </div>
-        <button 
-          className="btn-primary" 
-          onClick={handleCreateClick}
-          disabled={showForm}
-        >
-          + Add New User
-        </button>
+        <div className="management-actions">
+          <button
+            className="btn-secondary btn-logout"
+            onClick={handleLogout}
+            type="button"
+          >
+            <LogOut size={16} />
+            Logout
+          </button>
+          <button
+            className="btn-primary"
+            onClick={handleCreateClick}
+            disabled={showForm}
+            type="button"
+          >
+            + Add New User
+          </button>
+        </div>
       </header>
 
       <main className="management-main">

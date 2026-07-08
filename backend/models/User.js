@@ -8,6 +8,10 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Please provide a name'],
       trim: true
     },
+    fullName: {
+      type: String,
+      trim: true
+    },
     email: {
       type: String,
       required: [true, 'Please provide an email address'],
@@ -34,6 +38,14 @@ const userSchema = new mongoose.Schema(
       enum: ['active', 'inactive', 'pending'],
       default: 'active'
     },
+    specialization: {
+      type: String,
+      trim: true
+    },
+    isActive: {
+      type: Boolean,
+      default: true
+    },
     createdAt: {
       type: Date,
       default: Date.now
@@ -43,6 +55,28 @@ const userSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+/**
+ * Keep the legacy name/status fields in sync with the newer
+ * fullName/isActive fields used by doctor accounts.
+ */
+userSchema.pre('validate', function (next) {
+  if (!this.fullName && this.name) {
+    this.fullName = this.name;
+  }
+
+  if (!this.name && this.fullName) {
+    this.name = this.fullName;
+  }
+
+  if (this.isModified('isActive') && !this.isModified('status')) {
+    this.status = this.isActive ? 'active' : 'inactive';
+  } else if (this.isModified('status') && !this.isModified('isActive')) {
+    this.isActive = this.status === 'active';
+  }
+
+  next();
+});
 
 /**
  * Hash password before saving to database

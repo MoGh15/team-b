@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-change-me';
+
 /**
  * Middleware to protect routes - verify JWT token
  */
@@ -22,7 +24,7 @@ exports.protect = async (req, res, next) => {
 
   try {
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
 
     req.user = await User.findById(decoded.id);
 
@@ -30,6 +32,13 @@ exports.protect = async (req, res, next) => {
       return res.status(404).json({
         status: 'error',
         message: 'User not found'
+      });
+    }
+
+    if (req.user.status !== 'active' || req.user.isActive === false) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Account is inactive'
       });
     }
 

@@ -3,6 +3,30 @@
   background-color: #f5f5f5;
 }
 
+.app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8eaf6;
+}
+
+.app-nav a {
+  color: #26358f;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.app-nav a:hover {
+  text-decoration: underline;
+}
+
+.app-nav .language-switcher {
+  margin-inline-start: 8px;
+}
+
 .loading-state,
 .error-state {
   display: flex;

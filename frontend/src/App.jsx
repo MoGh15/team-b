@@ -2,7 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Login from './components/Login'
 import UserManagement from './pages/UserManagement'
-import { API_BASE_URL } from './api/userApi'
+import PatientForm from './pages/PatientForm'
+import AppointmentBooking from './pages/AppointmentBooking'
+import Appointments from './pages/Appointments'
+import AdminLogin from './pages/AdminLogin'
+import AdminDashboard from './pages/AdminDashboard'
+import DoctorDashboard from './pages/DoctorDashboard'
+import SubmissionDetails from './pages/SubmissionDetails'
+import CookieConsent from './components/CookieConsent'
+import LanguageSwitcher from './components/LanguageSwitcher'
 import './App.css'
 
 function AdminDashboardPlaceholder() {
@@ -67,17 +75,34 @@ function App() {
       </div>
     )
   }
+}
 
-  if (error) {
-    return (
-      <div className="app-container">
-        <div className="error-state">
-          <h2>Connection Error</h2>
-          <p>{error}</p>
-        </div>
-      </div>
-    )
+function getRoleHome(role) {
+  return role === 'doctor' ? '/doctor' : '/admin/submissions'
+}
+
+function ProtectedRoute({ children, roles }) {
+  const location = useLocation()
+  const token = localStorage.getItem('authToken')
+  const user = getStoredUser()
+
+  if (!token) {
+    return <Navigate to="/admin/login" replace state={{ from: location }} />
   }
+
+  if (roles?.length && !user?.role) {
+    return <Navigate to="/admin/login" replace state={{ from: location }} />
+  }
+
+  if (roles?.length && !roles.includes(user?.role)) {
+    return <Navigate to={getRoleHome(user?.role)} replace />
+  }
+
+  return children
+}
+
+function App() {
+  const { t } = useTranslation()
 
   return (
     <div className="app-container">

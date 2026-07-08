@@ -25,6 +25,12 @@
   color: #666;
 }
 
+.management-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .management-main {
   max-width: 1400px;
   margin: 0 auto;
@@ -75,9 +81,32 @@
   background-color: #0052a3;
 }
 
+.btn-secondary {
+  background-color: white;
+  color: #666;
+  border: 1px solid #ddd;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  border-color: #999;
+}
+
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.btn-logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: none;
 }
 
 @media (max-width: 768px) {
@@ -86,8 +115,17 @@
     align-items: flex-start;
   }
 
+  .management-actions {
+    width: 100%;
+    flex-direction: column-reverse;
+  }
+
   .btn-primary {
     width: 100%;
     text-align: center;
+  }
+
+  .btn-logout {
+    width: 100%;
   }
 }
